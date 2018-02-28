@@ -1,7 +1,8 @@
 package com.skynyrd.kafka.transform.impl;
 
 import com.google.gson.JsonObject;
-import com.skynyrd.kafka.Record;
+import com.skynyrd.kafka.model.Record;
+import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import org.apache.kafka.connect.sink.SinkRecord;
 
@@ -22,6 +23,6 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
                 .add("name", payload.get("name").getAsString())
                 .build();
 
-        return new Record(docJson, id);
+        return new Record(docJson, id, RecordType.INSERT);
     }
 }

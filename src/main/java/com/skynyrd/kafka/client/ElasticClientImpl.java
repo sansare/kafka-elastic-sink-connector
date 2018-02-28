@@ -1,11 +1,6 @@
 package com.skynyrd.kafka.client;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.skynyrd.kafka.Constants;
-import com.skynyrd.kafka.Record;
+import com.skynyrd.kafka.model.Record;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
@@ -38,15 +33,25 @@ public class ElasticClientImpl implements ElasticClient {
                 .defaultType(type);
 
         for (Record record : records) {
-            bulkBuilder.addAction(new Index.Builder(record.getDoc()).id(record.getId()).build());
+            switch (record.getType()) {
+                case UPDATE:
+                    bulkBuilder.addAction(new Update.Builder(record.getDoc().toString()).id(record.getId()).build());
+                    break;
+                default:
+                    bulkBuilder.addAction(new Index.Builder(record.getDoc().toString()).id(record.getId()).build());
+            }
+
         }
 
         try {
             if (records.size() > 0) {
-                BulkResult execute = client.execute(bulkBuilder.build());
-                String errorMessage = execute.getErrorMessage();
+                BulkResult bulkResult = client.execute(bulkBuilder.build());
+                String errorMessage = bulkResult.getErrorMessage();
 
                 if (errorMessage != null) {
+                    bulkResult.getFailedItems().forEach(bulkResultItem -> {
+                        log.error(bulkResultItem.errorReason);
+                    });
                     log.error(errorMessage);
                 }
             }

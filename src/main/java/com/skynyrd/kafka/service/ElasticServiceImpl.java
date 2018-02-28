@@ -1,7 +1,7 @@
 package com.skynyrd.kafka.service;
 
 import com.skynyrd.kafka.ElasticSinkConnectorConfig;
-import com.skynyrd.kafka.Record;
+import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.client.ElasticClient;
 import com.skynyrd.kafka.client.ElasticClientImpl;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;

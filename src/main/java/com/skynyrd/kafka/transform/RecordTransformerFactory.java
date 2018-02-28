@@ -11,11 +11,11 @@ public class RecordTransformerFactory {
 
     public static AbstractRecordTransformer getTransformer(String topic) throws IllegalArgumentException {
         switch (topic) {
-            case "stores":
+            case "stores-pg.public.stores":
                 return storesRecordTransformer;
-            case "products":
+            case "stores-pg.public.products":
                 return productsRecordTransformer;
-            case "product":
+            case "stores-pg.public.prod_attr_values":
                 return productAttrsRecordTransformer;
             default:
                 throw new IllegalArgumentException("Unknown topic: [" + topic + "]");

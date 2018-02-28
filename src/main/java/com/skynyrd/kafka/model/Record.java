@@ -1,14 +1,16 @@
-package com.skynyrd.kafka;
+package com.skynyrd.kafka.model;
 
 import javax.json.JsonObject;
 
 public class Record {
     private final JsonObject doc;
     private final String id;
+    private final RecordType type;
 
-    public Record(JsonObject doc, String id) {
+    public Record(JsonObject doc, String id, RecordType type) {
         this.doc = doc;
         this.id = id;
+        this.type = type;
     }
 
     public JsonObject getDoc() {
@@ -17,5 +19,9 @@ public class Record {
 
     public String getId() {
         return id;
+    }
+
+    public RecordType getType() {
+        return type;
     }
 }

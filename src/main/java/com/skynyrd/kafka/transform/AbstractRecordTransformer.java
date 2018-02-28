@@ -17,7 +17,7 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
 
     public AbstractRecordTransformer() {
         jsonConverter = new JsonConverter();
-        jsonConverter.configure(Collections.singletonMap("schemas.enable", false), false);
+        jsonConverter.configure(Collections.singletonMap("schemas", false), false);
 
         gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
@@ -34,7 +34,7 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
             JsonObject payload = recordAsJson.getAsJsonObject("payload").getAsJsonObject("after");
             return payload;
         } catch (Exception e) {
-            throw new ParseException("Error parsing record + [" + record + "]", -1);
+            throw new ParseException("Error parsing record + " + record, -1);
         }
     }
 }
