@@ -38,10 +38,7 @@ public class ElasticClientImpl implements ElasticClient {
                 .defaultType(type);
 
         for (Record record : records) {
-            String id = record.getDataObject().get("id").getAsString();
-            JsonObject data = record.getDataObject();
-
-            bulkBuilder.addAction(new Index.Builder(data).id(id).build());
+            bulkBuilder.addAction(new Index.Builder(record.getDoc()).id(record.getId()).build());
         }
 
         try {

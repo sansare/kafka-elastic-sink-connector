@@ -1,21 +1,21 @@
 package com.skynyrd.kafka;
 
-import com.google.gson.JsonObject;
+import javax.json.JsonObject;
 
 public class Record {
-    private final JsonObject dataObject;
-    private final String behaviour;
+    private final JsonObject doc;
+    private final String id;
 
-    public Record(JsonObject dataObject, String behaviour) {
-        this.dataObject = dataObject;
-        this.behaviour = behaviour;
+    public Record(JsonObject doc, String id) {
+        this.doc = doc;
+        this.id = id;
     }
 
-    public JsonObject getDataObject() {
-        return dataObject;
+    public JsonObject getDoc() {
+        return doc;
     }
 
-    public String getBehaviour() {
-        return behaviour;
+    public String getId() {
+        return id;
     }
 }
