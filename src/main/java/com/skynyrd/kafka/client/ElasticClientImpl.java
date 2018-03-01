@@ -50,7 +50,8 @@ public class ElasticClientImpl implements ElasticClient {
 
                 if (errorMessage != null) {
                     bulkResult.getFailedItems().forEach(bulkResultItem -> {
-                        log.error(bulkResultItem.errorReason);
+                        log.error("BULK: " + bulkResultItem.errorReason);
+                        log.error(bulkResultItem.error);
                     });
                     log.error(errorMessage);
                 }

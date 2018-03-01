@@ -16,27 +16,32 @@ public class ProductAttrsRecordTransformer extends AbstractRecordTransformer {
         JsonObject payload = extractPayload(record);
         String id = payload.get("prod_id").getAsString();
 
-        javax.json.JsonObject docJson = Json.createObjectBuilder()
-                .add("id", payload.get("prod_id").getAsString())
-                .add("attrs",
-                        Json.createArrayBuilder().add(
-                                createAttrObj(payload)
-                        ))
-                .build();
+        javax.json.JsonObject attrObj = createAttrObj(payload);
 
-        javax.json.JsonObject partialUpdWrapper = Json.createObjectBuilder()
-                .add("script", "ctx._source.attrs += attr")
-                .add("params",
+        String updScript =
+                "boolean updated = false; " +
+                "for (int i = 0; i < ctx._source.attrs.length; i++) {" +
+                "  if (ctx._source.attrs[i].attr_id == params.attr.attr_id) {" +
+                "    ctx._source.attrs[i] = params.attr; updated = true; break;" +
+                "  }" +
+                "}" +
+                "if (updated == false) {" +
+                "  ctx._source.attrs.add(params.attr);" +
+                "}";
+
+        javax.json.JsonObject docObj = Json.createObjectBuilder()
+                .add("script",
                         Json.createObjectBuilder()
-                                .add("attr",
-                                        Json.createArrayBuilder()
-                                        .add(docJson)
+                        .add("source", updScript)
+                        .add("params",
+                                Json.createObjectBuilder()
+                                        .add("attr", attrObj)
                                         .build()
-                                ).build()
-                )
-                .build();
+                        )
+                        .build()
+                ).build();
 
-        return new Record(partialUpdWrapper, id, RecordType.UPDATE);
+        return new Record(docObj, id, RecordType.UPDATE);
     }
 
     private javax.json.JsonObject createAttrObj(JsonObject payload) throws ParseException {
