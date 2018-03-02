@@ -6,7 +6,6 @@ import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import org.apache.kafka.connect.sink.SinkRecord;
 
-import javax.json.Json;
 import java.text.ParseException;
 
 public class ProductAttrsRecordTransformer extends AbstractRecordTransformer {
@@ -15,8 +14,6 @@ public class ProductAttrsRecordTransformer extends AbstractRecordTransformer {
     public Record apply(SinkRecord record) throws ParseException {
         JsonObject payload = extractPayload(record);
         String id = payload.get("prod_id").getAsString();
-
-        javax.json.JsonObject attrObj = createAttrObj(payload);
 
         String updScript =
                 "boolean updated = false; " +
@@ -29,38 +26,37 @@ public class ProductAttrsRecordTransformer extends AbstractRecordTransformer {
                 "  ctx._source.attrs.add(params.attr);" +
                 "}";
 
-        javax.json.JsonObject docObj = Json.createObjectBuilder()
-                .add("script",
-                        Json.createObjectBuilder()
-                        .add("source", updScript)
-                        .add("params",
-                                Json.createObjectBuilder()
-                                        .add("attr", attrObj)
-                                        .build()
-                        )
-                        .build()
-                ).build();
+        JsonObject docJson = new JsonObject();
 
-        return new Record(docObj, id, RecordType.UPDATE);
+        JsonObject scriptJson = new JsonObject();
+        scriptJson.addProperty("source", updScript);
+        scriptJson.add("params", createAttrWrapper(payload));
+
+        docJson.add("script", scriptJson);
+
+        return new Record(docJson, id, RecordType.UPDATE);
     }
 
-    private javax.json.JsonObject createAttrObj(JsonObject payload) throws ParseException {
+    private JsonObject createAttrWrapper(JsonObject payload) throws ParseException {
         try {
-            javax.json.JsonObjectBuilder attrObjBuilder = Json.createObjectBuilder();
-            attrObjBuilder.add("attr_id", payload.get("attr_id").getAsString());
+            JsonObject attrObj = new JsonObject();
+            attrObj.addProperty("attr_id", payload.get("attr_id").getAsLong());
 
             String type = payload.get("value_type").getAsString();
             String value = payload.get("value").getAsString();
 
             switch (type) {
                 case "Float":
-                    attrObjBuilder.add("float_val", Double.parseDouble(value));
+                    attrObj.addProperty("float_val", Double.parseDouble(value));
                     break;
                 default:
-                    attrObjBuilder.add("str_val", value);
+                    attrObj.addProperty("str_val", value);
             }
 
-            return attrObjBuilder.build();
+            JsonObject attrWrapper = new JsonObject();
+            attrWrapper.add("attr", attrObj);
+
+            return attrWrapper;
         } catch (Exception e) {
             throw new ParseException("Error extracting attribute", -1);
         }
