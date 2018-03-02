@@ -18,9 +18,18 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
 
         JsonObject docJson = new JsonObject();
         docJson.addProperty("id", payload.get("id").getAsLong());
-        docJson.add("name", payload.get("name").getAsJsonArray());
-        docJson.add("short_description", payload.get("short_description").getAsJsonArray());
-        docJson.add("long_description", payload.get("long_description").getAsJsonArray());
+        docJson.add(
+                "name",
+                gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+        );
+        docJson.add(
+                "short_description",
+                gson.fromJson(payload.get("short_description").getAsString(), JsonArray.class)
+        );
+        docJson.add(
+                "long_description",
+                gson.fromJson(payload.get("long_description").getAsString(), JsonArray.class)
+        );
         docJson.add("attrs", new JsonArray());
 
         return new Record(docJson, id, RecordType.INSERT);
