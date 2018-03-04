@@ -1,6 +1,6 @@
 package com.skynyrd.kafka.model;
 
-import javax.json.JsonObject;
+import com.google.gson.JsonObject;
 
 public class Record {
     private final JsonObject doc;

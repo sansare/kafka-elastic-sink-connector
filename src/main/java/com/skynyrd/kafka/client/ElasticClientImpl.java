@@ -35,10 +35,10 @@ public class ElasticClientImpl implements ElasticClient {
         for (Record record : records) {
             switch (record.getType()) {
                 case UPDATE:
-                    bulkBuilder.addAction(new Update.Builder(record.getDoc().toString()).id(record.getId()).build());
+                    bulkBuilder.addAction(new Update.Builder(record.getDoc()).id(record.getId()).build());
                     break;
                 default:
-                    bulkBuilder.addAction(new Index.Builder(record.getDoc().toString()).id(record.getId()).build());
+                    bulkBuilder.addAction(new Index.Builder(record.getDoc()).id(record.getId()).build());
             }
 
         }
