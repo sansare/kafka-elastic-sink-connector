@@ -1,15 +1,17 @@
 package com.skynyrd.kafka.transform.impl;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
+import com.skynyrd.kafka.transform.Utils;
 import org.apache.kafka.connect.sink.SinkRecord;
 
 import java.text.ParseException;
 
-public class ProductsRecordTransformer extends AbstractRecordTransformer {
+public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
     @Override
     public Record apply(SinkRecord record) throws ParseException {
@@ -26,12 +28,22 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
                 "short_description",
                 gson.fromJson(payload.get("short_description").getAsString(), JsonArray.class)
         );
-        docJson.add(
-                "long_description",
-                gson.fromJson(payload.get("long_description").getAsString(), JsonArray.class)
+        if (!payload.get("long_description").isJsonNull()) {
+            docJson.add(
+                    "long_description",
+                    gson.fromJson(payload.get("long_description").getAsString(), JsonArray.class)
+            );
+        }
+        docJson.add("variants", new JsonArray());
+
+        docJson.add("suggest",
+                Utils.createLocalSuggestions(
+                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+                )
         );
-        docJson.add("attrs", new JsonArray());
 
         return new Record(docJson, id, RecordType.INSERT);
     }
+
+
 }

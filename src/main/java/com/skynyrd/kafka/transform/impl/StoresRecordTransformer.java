@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
+import com.skynyrd.kafka.transform.Utils;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +28,12 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
             docJson.add(
                     "name",
                     gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+            );
+
+            docJson.add("suggest",
+                    Utils.createLocalSuggestions(
+                            gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+                    )
             );
 
             return new Record(docJson, id, RecordType.INSERT);
