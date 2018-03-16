@@ -20,6 +20,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         JsonObject docJson = new JsonObject();
         docJson.addProperty("id", payload.get("id").getAsLong());
+        docJson.addProperty("category_id", payload.get("category_id").getAsLong());
         docJson.add(
                 "name",
                 gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
