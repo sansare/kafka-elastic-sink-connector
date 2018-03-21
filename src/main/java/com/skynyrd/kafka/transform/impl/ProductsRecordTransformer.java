@@ -69,7 +69,6 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
 
     private JsonObject createVariantObj(JsonObject payload) {
         JsonObject variantObj = new JsonObject();
-        System.out.println(gson.toJson(payload));
         variantObj.addProperty("prod_id", payload.get("id").getAsLong());
 
         JsonElement discount = payload.get("discount");
