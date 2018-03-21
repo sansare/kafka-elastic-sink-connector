@@ -11,13 +11,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.ParseException;
+import java.util.Optional;
 
 public class StoresRecordTransformer extends AbstractRecordTransformer {
     private static Logger LOG = LogManager.getLogger(StoresRecordTransformer.class);
 
     @Override
-    public Record apply(SinkRecord record) throws ParseException {
-        JsonObject payload = extractPayload(record);
+    public Optional<Record> apply(SinkRecord record) throws ParseException {
+        Optional<JsonObject> payloadOpt = extractPayload(record).getAfter();
+
+        if (!payloadOpt.isPresent()) {
+            return Optional.empty();
+        }
+
+        JsonObject payload = payloadOpt.get();
 
         try {
             String id = payload.get("id").getAsString();
@@ -36,7 +43,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
                     )
             );
 
-            return new Record(docJson, id, RecordType.INSERT);
+            return Optional.of(new Record(docJson, id, RecordType.INSERT));
         } catch (Exception e) {
             LOG.error("Error parsing payload [" + payload);
             throw new ParseException("Error parsing payload", -1);

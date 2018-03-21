@@ -42,7 +42,10 @@ public class ElasticServiceImpl implements ElasticService {
         recordsAsString.forEach(record -> {
             try {
                 AbstractRecordTransformer recordTransformer = RecordTransformerFactory.getTransformer(record.topic());
-                recordList.add(recordTransformer.apply(record));
+                Optional<Record> transformed = recordTransformer.apply(record);
+                if (transformed.isPresent()) {
+                    recordList.add(transformed.get());
+                }
             } catch (Exception e) {
                 log.error("Error processing record", e);
             }

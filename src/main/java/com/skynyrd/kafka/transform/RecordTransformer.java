@@ -4,7 +4,8 @@ import com.skynyrd.kafka.model.Record;
 import org.apache.kafka.connect.sink.SinkRecord;
 
 import java.text.ParseException;
+import java.util.Optional;
 
 public interface RecordTransformer {
-    Record apply(SinkRecord record) throws ParseException;
+    Optional<Record> apply(SinkRecord record) throws ParseException;
 }
