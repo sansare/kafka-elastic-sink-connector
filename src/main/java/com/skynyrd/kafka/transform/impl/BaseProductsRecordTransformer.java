@@ -5,17 +5,33 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
+import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import com.skynyrd.kafka.transform.Utils;
 import org.apache.kafka.connect.sink.SinkRecord;
 
 import java.text.ParseException;
+import java.util.Optional;
 
 public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
     @Override
-    public Record apply(SinkRecord record) throws ParseException {
-        JsonObject payload = extractPayload(record);
+    public Optional<Record> apply(SinkRecord record) throws ParseException {
+        SinkPayload payload = extractPayload(record);
+        Optional<JsonObject> afterPayload = payload.getAfter();
+
+        if (!afterPayload.isPresent()) {
+            return Optional.empty();
+        }
+
+        if (payload.getBefore().isPresent()) {
+            return Optional.of(createUpdateRecord(afterPayload.get()));
+        } else {
+            return Optional.of(createInsertRecord(afterPayload.get()));
+        }
+    }
+
+    private Record createInsertRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
 
         JsonObject docJson = new JsonObject();
@@ -37,6 +53,8 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         }
         docJson.add("variants", new JsonArray());
 
+        docJson.addProperty("views", payload.get("views").getAsLong());
+
         docJson.add("suggest",
                 Utils.createLocalSuggestions(
                         gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
@@ -46,5 +64,25 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         return new Record(docJson, id, RecordType.INSERT);
     }
 
+    private Record createUpdateRecord(JsonObject payload) {
+        String id = payload.get("id").getAsString();
+        long views = payload.get("views").getAsLong();
 
+        String updScript =
+                "ctx._source.views = params.views";
+
+        JsonObject docJson = new JsonObject();
+
+        JsonObject scriptJson = new JsonObject();
+        scriptJson.addProperty("source", updScript);
+
+        JsonObject viewsObj = new JsonObject();
+        viewsObj.addProperty("views", views);
+
+        scriptJson.add("params", viewsObj);
+
+        docJson.add("script", scriptJson);
+
+        return new Record(docJson, id, RecordType.UPDATE);
+    }
 }
