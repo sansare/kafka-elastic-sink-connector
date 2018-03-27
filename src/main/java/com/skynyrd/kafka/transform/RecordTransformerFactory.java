@@ -12,14 +12,19 @@ public class RecordTransformerFactory {
     private static ProdAttrsRecordTransformer prodAttrsRecordTransformer = new ProdAttrsRecordTransformer();
 
     public static AbstractRecordTransformer getTransformer(String topic) throws IllegalArgumentException {
-        switch (topic) {
-            case "stores-pg.public.stores":
+        int lastDotIdx = topic.lastIndexOf('.');
+        String token = (lastDotIdx < 0 || lastDotIdx >= topic.length())
+                ? ""
+                : topic.substring(lastDotIdx + 1);
+
+        switch (token) {
+            case "stores":
                 return storesRecordTransformer;
-            case "stores-pg.public.base_products":
+            case "base_products":
                 return baseProductsRecordTransformer;
-            case "stores-pg.public.products":
+            case "products":
                 return productsRecordTransformer;
-            case "stores-pg.public.prod_attr_values":
+            case "prod_attr_values":
                 return prodAttrsRecordTransformer;
             default:
                 throw new IllegalArgumentException("Unknown topic: [" + topic + "]");
