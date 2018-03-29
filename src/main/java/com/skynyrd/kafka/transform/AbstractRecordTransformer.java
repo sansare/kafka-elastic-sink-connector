@@ -37,7 +37,7 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
 
 
             String opStr = recordAsJson.getAsJsonObject("payload").get("op").getAsString();
-            SinkOp op = SinkOp.valueOf(opStr);
+            SinkOp op = SinkOp.fromStr(opStr);
 
             Optional<JsonObject> after = Optional.empty();
             try {

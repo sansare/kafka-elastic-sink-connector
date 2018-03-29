@@ -24,10 +24,13 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
             return Optional.empty();
         }
 
-        if (payload.getOp() == SinkOp.UPDATE) {
-            return Optional.of(createUpdateRecord(afterPayload.get()));
-        } else {
-            return Optional.of(createInsertRecord(afterPayload.get()));
+        switch (payload.getOp()) {
+            case CREATE:
+                return Optional.of(createInsertRecord(afterPayload.get()));
+            case UPDATE:
+                return Optional.of(createUpdateRecord(afterPayload.get()));
+            default:
+                return Optional.empty();
         }
     }
 
