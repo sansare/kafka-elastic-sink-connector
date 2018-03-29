@@ -1,10 +1,10 @@
 package com.skynyrd.kafka.transform.impl;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
+import com.skynyrd.kafka.model.SinkOp;
 import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import com.skynyrd.kafka.transform.Utils;
@@ -24,10 +24,13 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
             return Optional.empty();
         }
 
-        if (payload.getBefore().isPresent()) {
-            return Optional.of(createUpdateRecord(afterPayload.get()));
-        } else {
-            return Optional.of(createInsertRecord(afterPayload.get()));
+        switch (payload.getOp()) {
+            case CREATE:
+                return Optional.of(createInsertRecord(afterPayload.get()));
+            case UPDATE:
+                return Optional.of(createUpdateRecord(afterPayload.get()));
+            default:
+                return Optional.empty();
         }
     }
 
