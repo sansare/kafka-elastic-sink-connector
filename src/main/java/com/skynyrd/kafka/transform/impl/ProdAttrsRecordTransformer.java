@@ -85,6 +85,7 @@ public class ProdAttrsRecordTransformer extends AbstractRecordTransformer {
     private JsonObject createVariantObj(JsonObject payload) {
         JsonObject variantObj = new JsonObject();
         variantObj.addProperty("prod_id", payload.get("prod_id").getAsLong());
+        variantObj.addProperty("price", 0.0);
         variantObj.addProperty("discount", 0.0);
         variantObj.add("attrs", createAttrsArr(payload));
 
