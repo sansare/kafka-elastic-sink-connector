@@ -5,16 +5,16 @@ import com.google.gson.JsonObject;
 import java.util.Optional;
 
 public class SinkPayload {
-    private Optional<JsonObject> before;
+    private SinkOp op;
     private Optional<JsonObject> after;
 
-    public SinkPayload(Optional<JsonObject> before, Optional<JsonObject> after) {
-        this.before = before;
+    public SinkPayload(SinkOp op, Optional<JsonObject> after) {
+        this.op = op;
         this.after = after;
     }
 
-    public Optional<JsonObject> getBefore() {
-        return before;
+    public SinkOp getOp() {
+        return op;
     }
 
     public Optional<JsonObject> getAfter() {

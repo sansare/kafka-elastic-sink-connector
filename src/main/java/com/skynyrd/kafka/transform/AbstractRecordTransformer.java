@@ -4,6 +4,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.skynyrd.kafka.model.SinkOp;
 import com.skynyrd.kafka.model.SinkPayload;
 import org.apache.kafka.connect.json.JsonConverter;
 import org.apache.kafka.connect.sink.SinkRecord;
@@ -34,12 +35,9 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
             String recordStr = new String(rawJsonPayload, StandardCharsets.UTF_8);
             JsonObject recordAsJson = gson.fromJson(recordStr, JsonObject.class);
 
-            Optional<JsonObject> before = Optional.empty();
-            try {
-                 before = Optional.of(recordAsJson.getAsJsonObject("payload").getAsJsonObject("before"));
-            } catch (Exception e) {
-                // ignored
-            }
+
+            String opStr = recordAsJson.getAsJsonObject("payload").get("op").getAsString();
+            SinkOp op = SinkOp.valueOf(opStr);
 
             Optional<JsonObject> after = Optional.empty();
             try {
@@ -47,7 +45,7 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
             } catch (Exception e) {
                 // ignored
             }
-            return new SinkPayload(before, after);
+            return new SinkPayload(op, after);
         } catch (Exception e) {
             throw new ParseException("Error parsing record + " + record, -1);
         }
