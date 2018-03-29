@@ -1,7 +1,6 @@
 package com.skynyrd.kafka.transform.impl;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
@@ -23,6 +22,9 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         if (!afterPayload.isPresent()) {
             return Optional.empty();
         }
+
+        System.out.println("=======================================================================");
+        System.out.println(payload.getBefore().get());
 
         if (payload.getBefore().isPresent()) {
             return Optional.of(createUpdateRecord(afterPayload.get()));
