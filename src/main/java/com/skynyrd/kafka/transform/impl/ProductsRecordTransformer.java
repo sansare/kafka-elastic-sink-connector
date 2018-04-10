@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
-import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import org.apache.kafka.connect.sink.SinkRecord;
 
@@ -36,6 +35,7 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
                 "def var_param = params.variant;" +
                 "for (int i = 0; i < vars.length; i++) {" +
                 "    if (vars[i].prod_id == var_param.prod_id) {" +
+                "        vars[i].price = var_param.price;" +
                 "        vars[i].discount = var_param.discount;" +
                 "        updated = true;" +
                 "        break;" +
