@@ -30,7 +30,6 @@ public class ProdAttrsRecordTransformer extends AbstractRecordTransformer {
         String id = payload.get("base_prod_id").getAsString();
 
         String updScript =
-                "boolean updated = false;" +
                 "def vars = ctx._source.variants;" +
                 "def var_param = params.variant;" +
                 "for (int i = 0; i < vars.length; i++) {" +
@@ -51,13 +50,8 @@ public class ProdAttrsRecordTransformer extends AbstractRecordTransformer {
                 "                vars[i].attrs.add(attrs_param[j]);" +
                 "            }" +
                 "        }" +
-
-                "        updated = true;" +
                 "        break;" +
                 "    }" +
-                "}" +
-                "if (updated == false) {" +
-                "    ctx._source.variants.add(var_param);" +
                 "}";
 
         JsonObject docJson = new JsonObject();
