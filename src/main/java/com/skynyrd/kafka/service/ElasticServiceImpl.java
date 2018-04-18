@@ -42,10 +42,8 @@ public class ElasticServiceImpl implements ElasticService {
         recordsAsString.forEach(record -> {
             try {
                 AbstractRecordTransformer recordTransformer = RecordTransformerFactory.getTransformer(record.topic());
-                Optional<Record> transformed = recordTransformer.apply(record);
-                if (transformed.isPresent()) {
-                    recordList.add(transformed.get());
-                }
+                Optional<Record> transformedRecord = recordTransformer.apply(record);
+                transformedRecord.ifPresent(rec -> elasticClient.send(rec, typeName));
             } catch (Exception e) {
                 log.error("Error processing record", e);
             }

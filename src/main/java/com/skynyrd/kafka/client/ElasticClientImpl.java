@@ -26,8 +26,28 @@ public class ElasticClientImpl implements ElasticClient {
         client = factory.getObject();
     }
 
-    public void send(Record record, String index, String type) {
-
+    public void send(Record record, String type) {
+        try {
+            switch (record.getType()) {
+                case INSERT:
+                    client.execute(
+                            new Index.Builder(record.getDoc())
+                                    .index(record.getIndex())
+                                    .id(record.getId())
+                                    .type(type)
+                                    .build());
+                case UPDATE:
+                    client.execute(
+                            new Update.Builder(record.getDoc())
+                                    .index(record.getIndex())
+                                    .id(record.getId())
+                                    .type(type)
+                                    .build());
+            }
+        } catch (IOException e) {
+            log.error(e.toString());
+            e.printStackTrace();
+        }
     }
 
     public void bulkSend(List<Record> records, String index, String type) {

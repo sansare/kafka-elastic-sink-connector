@@ -2,6 +2,7 @@ package com.skynyrd.kafka.transform.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.skynyrd.kafka.Consts;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.model.SinkPayload;
@@ -60,7 +61,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
                     )
             );
 
-            return new Record(docJson, id, recordType);
+            return new Record(docJson, id, recordType, Consts.STORES_INDEX);
         } catch (Exception e) {
             LOG.error("Error parsing payload [" + payload);
             throw new ParseException("Error parsing payload", -1);

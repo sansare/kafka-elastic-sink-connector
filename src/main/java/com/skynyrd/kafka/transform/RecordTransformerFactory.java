@@ -11,13 +11,8 @@ public class RecordTransformerFactory {
     private static ProductsRecordTransformer productsRecordTransformer = new ProductsRecordTransformer();
     private static ProdAttrsRecordTransformer prodAttrsRecordTransformer = new ProdAttrsRecordTransformer();
 
-    public static AbstractRecordTransformer getTransformer(String topic) throws IllegalArgumentException {
-        int lastDotIdx = topic.lastIndexOf('.');
-        String token = (lastDotIdx < 0 || lastDotIdx >= topic.length())
-                ? ""
-                : topic.substring(lastDotIdx + 1);
-
-        switch (token) {
+    public static AbstractRecordTransformer getTransformer(String table) throws IllegalArgumentException {
+        switch (table) {
             case "stores":
                 return storesRecordTransformer;
             case "base_products":
@@ -27,7 +22,7 @@ public class RecordTransformerFactory {
             case "prod_attr_values":
                 return prodAttrsRecordTransformer;
             default:
-                throw new IllegalArgumentException("Unknown topic: [" + topic + "]");
+                throw new IllegalArgumentException("Unknown table: [" + table + "]");
         }
     }
 }

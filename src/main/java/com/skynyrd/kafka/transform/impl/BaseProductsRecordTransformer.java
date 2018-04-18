@@ -2,6 +2,7 @@ package com.skynyrd.kafka.transform.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.skynyrd.kafka.Consts;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.model.SinkOp;
@@ -66,7 +67,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
                 )
         );
 
-        return new Record(docJson, id, RecordType.INSERT);
+        return new Record(docJson, id, RecordType.INSERT, Consts.PRODUCTS_INDEX);
     }
 
     private Record createUpdateRecord(JsonObject payload) {
@@ -89,6 +90,6 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         docJson.add("script", scriptJson);
 
-        return new Record(docJson, id, RecordType.UPDATE);
+        return new Record(docJson, id, RecordType.UPDATE, Consts.PRODUCTS_INDEX);
     }
 }
