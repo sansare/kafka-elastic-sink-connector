@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
+import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import org.apache.kafka.connect.sink.SinkRecord;
 
@@ -15,15 +16,20 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
 
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {
-        Optional<JsonObject> payload = extractPayload(record).getAfter();
+        SinkPayload sinkPayload = extractPayload(record);
+        Optional<JsonObject> payload = sinkPayload.getPayload();
 
         if (!payload.isPresent()) {
             return Optional.empty();
         }
 
-        JsonObject afterPayload = payload.get();
-
-        return Optional.of(createRecord(afterPayload));
+        switch (sinkPayload.getOp()) {
+            case CREATE:
+            case UPDATE:
+                return Optional.of(createRecord(payload.get()));
+            default:
+                return Optional.empty();
+        }
     }
 
     private Record createRecord(JsonObject payload) throws ParseException {

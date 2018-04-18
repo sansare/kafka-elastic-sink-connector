@@ -17,18 +17,18 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {
-        SinkPayload payload = extractPayload(record);
-        Optional<JsonObject> afterPayload = payload.getAfter();
+        SinkPayload sinkPayload = extractPayload(record);
+        Optional<JsonObject> payload = sinkPayload.getPayload();
 
-        if (!afterPayload.isPresent()) {
+        if (!payload.isPresent()) {
             return Optional.empty();
         }
 
-        switch (payload.getOp()) {
+        switch (sinkPayload.getOp()) {
             case CREATE:
-                return Optional.of(createInsertRecord(afterPayload.get()));
+                return Optional.of(createInsertRecord(payload.get()));
             case UPDATE:
-                return Optional.of(createUpdateRecord(afterPayload.get()));
+                return Optional.of(createUpdateRecord(payload.get()));
             default:
                 return Optional.empty();
         }
@@ -58,6 +58,8 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         docJson.addProperty("views", payload.get("views").getAsLong());
 
+        docJson.addProperty("rating", payload.get("rating").getAsLong());
+
         docJson.add("suggest",
                 Utils.createLocalSuggestions(
                         gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
@@ -72,7 +74,8 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         long views = payload.get("views").getAsLong();
 
         String updScript =
-                "ctx._source.views = params.views";
+                "ctx._source.views = params.views;" +
+                "ctx._source.rating = params.rating;";
 
         JsonObject docJson = new JsonObject();
 

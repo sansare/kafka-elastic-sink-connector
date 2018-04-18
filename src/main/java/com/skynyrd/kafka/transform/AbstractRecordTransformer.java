@@ -8,6 +8,8 @@ import com.skynyrd.kafka.model.SinkOp;
 import com.skynyrd.kafka.model.SinkPayload;
 import org.apache.kafka.connect.json.JsonConverter;
 import org.apache.kafka.connect.sink.SinkRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -15,6 +17,8 @@ import java.util.Collections;
 import java.util.Optional;
 
 public abstract class AbstractRecordTransformer implements RecordTransformer {
+    private static Logger log = LogManager.getLogger(AbstractRecordTransformer.class);
+
     protected JsonConverter jsonConverter;
     protected Gson gson;
 
@@ -43,7 +47,7 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
             try {
                 after = Optional.of(recordAsJson.getAsJsonObject("payload").getAsJsonObject("after"));
             } catch (Exception e) {
-                // ignored
+                log.error(e);
             }
             return new SinkPayload(op, after);
         } catch (Exception e) {

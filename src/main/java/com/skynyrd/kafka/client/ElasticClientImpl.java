@@ -26,6 +26,10 @@ public class ElasticClientImpl implements ElasticClient {
         client = factory.getObject();
     }
 
+    public void send(Record record, String index, String type) {
+
+    }
+
     public void bulkSend(List<Record> records, String index, String type) {
         Bulk.Builder indexBuilder = new Bulk.Builder()
                 .defaultIndex(index)
