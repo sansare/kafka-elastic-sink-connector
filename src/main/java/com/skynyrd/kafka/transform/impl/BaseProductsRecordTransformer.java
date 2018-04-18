@@ -72,7 +72,8 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         long views = payload.get("views").getAsLong();
 
         String updScript =
-                "ctx._source.views = params.views";
+                "ctx._source.views = params.views;" +
+                "ctx._source.rating = params.rating;";
 
         JsonObject docJson = new JsonObject();
 
