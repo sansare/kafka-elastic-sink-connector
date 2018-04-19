@@ -3,8 +3,10 @@ package com.skynyrd.kafka.transform.impl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.skynyrd.kafka.Consts;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
+import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import com.skynyrd.kafka.transform.Utils;
 import org.apache.kafka.connect.sink.SinkRecord;
@@ -19,56 +21,97 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
 
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {
-        Optional<JsonObject> payloadOpt = extractPayload(record).getAfter();
+        SinkPayload sinkPayload = extractPayload(record);
+        Optional<JsonObject> payload = sinkPayload.getPayload();
 
-        if (!payloadOpt.isPresent()) {
+        if (!payload.isPresent()) {
             return Optional.empty();
         }
 
-        JsonObject payload = payloadOpt.get();
+        switch (sinkPayload.getOp()) {
+            case CREATE:
+                return Optional.of(createInsertRecord(payload.get()));
+            case UPDATE:
+                return Optional.of(createUpdateRecord(payload.get()));
+            default:
+                return Optional.empty();
+        }
+    }
 
+    private JsonObject createDoc(JsonObject payload) {
+        String id = payload.get("id").getAsString();
+
+        JsonObject docJson = new JsonObject();
+        docJson.addProperty("id", payload.get("id").getAsLong());
+        docJson.addProperty("user_id", payload.get("user_id").getAsLong());
+        docJson.add(
+                "name",
+                gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+        );
+
+        JsonElement countryJson = payload.get("country");
+        String country = countryJson == null || countryJson.isJsonNull()
+                ? ""
+                : countryJson.getAsString();
+        docJson.addProperty("country", country);
+
+        docJson.addProperty("rating", payload.get("rating").getAsLong());
+
+        JsonElement prodCatJson = payload.get("product_categories");
+        if (prodCatJson == null || prodCatJson.isJsonNull()) {
+            docJson.add(
+                    "product_categories",
+                    new JsonArray()
+            );
+        } else {
+            docJson.add(
+                    "product_categories",
+                    gson.fromJson(prodCatJson.getAsString(), JsonArray.class)
+            );
+        }
+
+        docJson.add("suggest",
+                Utils.createLocalSuggestions(
+                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+                )
+        );
+
+        return docJson;
+    }
+
+    private Record createInsertRecord(JsonObject payload) throws ParseException {
+        try {
+            String id = payload.get("id").getAsString();
+            JsonObject docJson = createDoc(payload);
+            return new Record(docJson, id, RecordType.INSERT, Consts.STORES_INDEX);
+        } catch (Exception e) {
+            LOG.error("Error parsing payload [" + payload);
+            throw new ParseException("Error parsing payload", -1);
+        }
+    }
+
+    private Record createUpdateRecord(JsonObject payload) throws ParseException {
         try {
             String id = payload.get("id").getAsString();
 
+            String updScript =
+                    "ctx._source = params.payload;";
+
             JsonObject docJson = new JsonObject();
-            docJson.addProperty("id", payload.get("id").getAsLong());
-            docJson.addProperty("user_id", payload.get("user_id").getAsLong());
-            docJson.add(
-                    "name",
-                    gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
-            );
 
-            JsonElement countryJson = payload.get("country");
-            String country = countryJson == null || countryJson.isJsonNull()
-                    ? ""
-                    : countryJson.getAsString();
-            docJson.addProperty("country", country);
+            JsonObject scriptJson = new JsonObject();
+            scriptJson.addProperty("source", updScript);
 
-            docJson.addProperty("rating", payload.get("rating").getAsLong());
+            JsonObject paramsObj = new JsonObject();
+            paramsObj.add("payload",  createDoc(payload));
 
-            JsonElement prodCatJson = payload.get("product_categories");
-            if (prodCatJson == null || prodCatJson.isJsonNull()) {
-                docJson.add(
-                        "product_categories",
-                        new JsonArray()
-                );
-            } else {
-                docJson.add(
-                        "product_categories",
-                        gson.fromJson(prodCatJson, JsonArray.class)
-                );
-            }
+            scriptJson.add("params", paramsObj);
 
-            docJson.add("suggest",
-                    Utils.createLocalSuggestions(
-                            gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
-                    )
-            );
+            docJson.add("script", scriptJson);
 
-            return Optional.of(new Record(docJson, id, RecordType.INSERT));
+            return new Record(docJson, id, RecordType.UPDATE, Consts.STORES_INDEX);
         } catch (Exception e) {
-            LOG.error("Error parsing payload [" + payload + "]");
-            LOG.error(e);
+            LOG.error("Error parsing payload [" + payload);
             throw new ParseException("Error parsing payload", -1);
         }
     }

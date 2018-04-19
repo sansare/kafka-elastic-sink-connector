@@ -33,7 +33,6 @@ public class ElasticSinkTask extends SinkTask {
     @Override
     public void put(Collection<SinkRecord> collection) {
         try {
-            Collection<String> recordsAsString = collection.stream().map(r -> String.valueOf(r.value())).collect(Collectors.toList());
             elasticService.process(collection);
         }
         catch (Exception e) {

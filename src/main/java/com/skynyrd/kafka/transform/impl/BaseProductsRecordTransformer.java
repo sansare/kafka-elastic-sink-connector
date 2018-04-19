@@ -2,6 +2,7 @@ package com.skynyrd.kafka.transform.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.skynyrd.kafka.Consts;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.model.SinkOp;
@@ -17,18 +18,18 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {
-        SinkPayload payload = extractPayload(record);
-        Optional<JsonObject> afterPayload = payload.getAfter();
+        SinkPayload sinkPayload = extractPayload(record);
+        Optional<JsonObject> payload = sinkPayload.getPayload();
 
-        if (!afterPayload.isPresent()) {
+        if (!payload.isPresent()) {
             return Optional.empty();
         }
 
-        switch (payload.getOp()) {
+        switch (sinkPayload.getOp()) {
             case CREATE:
-                return Optional.of(createInsertRecord(afterPayload.get()));
+                return Optional.of(createInsertRecord(payload.get()));
             case UPDATE:
-                return Optional.of(createUpdateRecord(afterPayload.get()));
+                return Optional.of(createUpdateRecord(payload.get()));
             default:
                 return Optional.empty();
         }
@@ -58,18 +59,21 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         docJson.addProperty("views", payload.get("views").getAsLong());
 
+        docJson.addProperty("rating", payload.get("rating").getAsLong());
+
         docJson.add("suggest",
                 Utils.createLocalSuggestions(
                         gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
                 )
         );
 
-        return new Record(docJson, id, RecordType.INSERT);
+        return new Record(docJson, id, RecordType.INSERT, Consts.PRODUCTS_INDEX);
     }
 
     private Record createUpdateRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
         long views = payload.get("views").getAsLong();
+        long rating = payload.get("rating").getAsLong();
 
         String updScript =
                 "ctx._source.views = params.views;" +
@@ -80,13 +84,14 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         JsonObject scriptJson = new JsonObject();
         scriptJson.addProperty("source", updScript);
 
-        JsonObject viewsObj = new JsonObject();
-        viewsObj.addProperty("views", views);
+        JsonObject paramsObj = new JsonObject();
+        paramsObj.addProperty("views", views);
+        paramsObj.addProperty("rating", rating);
 
-        scriptJson.add("params", viewsObj);
+        scriptJson.add("params", paramsObj);
 
         docJson.add("script", scriptJson);
 
-        return new Record(docJson, id, RecordType.UPDATE);
+        return new Record(docJson, id, RecordType.UPDATE, Consts.PRODUCTS_INDEX);
     }
 }

@@ -13,16 +13,19 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ElasticServiceImpl implements ElasticService {
     private static Logger log = LogManager.getLogger(ElasticServiceImpl.class);
 
-    private String indexName;
+    private static final Pattern TABLE_PATTERN =
+            Pattern.compile("Struct\\{.*table=(.+)\\}");
+
     private String typeName;
     private ElasticClient elasticClient;
 
     public ElasticServiceImpl(ElasticClient elasticClient, ElasticSinkConnectorConfig config) {
-        indexName = config.getIndexName();
         typeName = config.getTypeName();
 
         if(elasticClient == null) {
@@ -36,26 +39,42 @@ public class ElasticServiceImpl implements ElasticService {
     }
 
     @Override
-    public void process(Collection<SinkRecord> recordsAsString){
-        List<Record> recordList = new ArrayList<>();
+    public void process(Collection<SinkRecord> records) {
+        records.forEach(record -> {
+            log.info("Record received: " + record.toString());
 
-        recordsAsString.forEach(record -> {
             try {
-                AbstractRecordTransformer recordTransformer = RecordTransformerFactory.getTransformer(record.topic());
-                Optional<Record> transformed = recordTransformer.apply(record);
-                if (transformed.isPresent()) {
-                    recordList.add(transformed.get());
-                }
+                Optional<String> tableOpt = extractTable(record);
+
+                tableOpt.ifPresent(table -> {
+                    Optional<AbstractRecordTransformer> recordTransformer =
+                            RecordTransformerFactory.getTransformer(table);
+
+                    recordTransformer.ifPresent(transformer -> {
+                        try {
+                            Optional<Record> transformedRecord = transformer.apply(record);
+                            transformedRecord.ifPresent(rec -> elasticClient.send(rec, typeName));
+                        } catch (Exception e) {
+                            log.error("Error processing record", e);
+                        }
+                    });
+                });
             } catch (Exception e) {
-                log.error("Error processing record", e);
+                log.error(e);
             }
         });
+    }
 
-        try {
-            elasticClient.bulkSend(recordList, indexName, typeName);
-        }
-        catch (Exception e) {
-            log.error("Error sending to Elastic", e);
+    private Optional<String> extractTable(SinkRecord record) {
+        Matcher matcher = TABLE_PATTERN.matcher(record.key().toString());
+
+        if (matcher.find()) {
+            String table = matcher.group(1);
+            log.info("Extracted table: [" + table + "]");
+            return Optional.of(table);
+        } else {
+            log.info("No table found in key " + record.key());
+            return Optional.empty();
         }
     }
 

@@ -6,18 +6,18 @@ import java.util.Optional;
 
 public class SinkPayload {
     private SinkOp op;
-    private Optional<JsonObject> after;
+    private Optional<JsonObject> payload;
 
-    public SinkPayload(SinkOp op, Optional<JsonObject> after) {
+    public SinkPayload(SinkOp op, Optional<JsonObject> payload) {
         this.op = op;
-        this.after = after;
+        this.payload = payload;
     }
 
     public SinkOp getOp() {
         return op;
     }
 
-    public Optional<JsonObject> getAfter() {
-        return after;
+    public Optional<JsonObject> getPayload() {
+        return payload;
     }
 }

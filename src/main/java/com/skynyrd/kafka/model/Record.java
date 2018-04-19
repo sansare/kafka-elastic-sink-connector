@@ -6,11 +6,13 @@ public class Record {
     private final JsonObject doc;
     private final String id;
     private final RecordType type;
+    private final String index;
 
-    public Record(JsonObject doc, String id, RecordType type) {
+    public Record(JsonObject doc, String id, RecordType type, String index) {
         this.doc = doc;
         this.id = id;
         this.type = type;
+        this.index = index;
     }
 
     public JsonObject getDoc() {
@@ -23,5 +25,19 @@ public class Record {
 
     public RecordType getType() {
         return type;
+    }
+
+    public String getIndex() {
+        return index;
+    }
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "doc=" + doc +
+                ", id='" + id + '\'' +
+                ", type=" + type +
+                ", index='" + index + '\'' +
+                '}';
     }
 }
