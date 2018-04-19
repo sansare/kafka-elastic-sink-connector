@@ -1,6 +1,7 @@
 package com.skynyrd.kafka.transform.impl;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.Consts;
 import com.skynyrd.kafka.model.Record;
@@ -29,39 +30,86 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
 
         switch (sinkPayload.getOp()) {
             case CREATE:
-                return Optional.of(createRecord(payload.get(), RecordType.INSERT));
+                return Optional.of(createInsertRecord(payload.get()));
             case UPDATE:
-                return Optional.of(createRecord(payload.get(), RecordType.UPDATE));
+                return Optional.of(createUpdateRecord(payload.get()));
             default:
                 return Optional.empty();
         }
     }
 
-    private Record createRecord(JsonObject payload, RecordType recordType) throws ParseException {
+    private JsonObject createDoc(JsonObject payload) {
+        String id = payload.get("id").getAsString();
+
+        JsonObject docJson = new JsonObject();
+        docJson.addProperty("id", payload.get("id").getAsLong());
+        docJson.addProperty("user_id", payload.get("user_id").getAsLong());
+        docJson.add(
+                "name",
+                gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+        );
+
+        JsonElement countryJson = payload.get("country");
+        String country = countryJson == null || countryJson.isJsonNull()
+                ? ""
+                : countryJson.getAsString();
+        docJson.addProperty("country", country);
+
+        docJson.addProperty("rating", payload.get("rating").getAsLong());
+
+        JsonElement prodCatJson = payload.get("product_categories");
+        if (prodCatJson == null || prodCatJson.isJsonNull()) {
+            docJson.add(
+                    "product_categories",
+                    new JsonArray()
+            );
+        } else {
+            docJson.add(
+                    "product_categories",
+                    gson.fromJson(prodCatJson, JsonArray.class)
+            );
+        }
+
+        docJson.add("suggest",
+                Utils.createLocalSuggestions(
+                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+                )
+        );
+
+        return docJson;
+    }
+
+    private Record createInsertRecord(JsonObject payload) throws ParseException {
+        try {
+            String id = payload.get("id").getAsString();
+            JsonObject docJson = createDoc(payload);
+            return new Record(docJson, id, RecordType.INSERT, Consts.STORES_INDEX);
+        } catch (Exception e) {
+            LOG.error("Error parsing payload [" + payload);
+            throw new ParseException("Error parsing payload", -1);
+        }
+    }
+
+    private Record createUpdateRecord(JsonObject payload) throws ParseException {
         try {
             String id = payload.get("id").getAsString();
 
+            String updScript =
+                    "ctx._source = params.payload;";
+
             JsonObject docJson = new JsonObject();
-            docJson.addProperty("id", payload.get("id").getAsLong());
-            docJson.addProperty("user_id", payload.get("user_id").getAsLong());
-            docJson.add(
-                    "name",
-                    gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
-            );
-            docJson.addProperty("country", payload.get("country").getAsString());
-            docJson.addProperty("rating", payload.get("rating").getAsLong());
-            docJson.add(
-                    "product_categories",
-                    gson.fromJson(payload.get("product_categories").getAsString(), JsonArray.class)
-            );
 
-            docJson.add("suggest",
-                    Utils.createLocalSuggestions(
-                            gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
-                    )
-            );
+            JsonObject scriptJson = new JsonObject();
+            scriptJson.addProperty("source", updScript);
 
-            return new Record(docJson, id, recordType, Consts.STORES_INDEX);
+            JsonObject paramsObj = new JsonObject();
+            paramsObj.add("payload",  createDoc(payload));
+
+            scriptJson.add("params", paramsObj);
+
+            docJson.add("script", scriptJson);
+
+            return new Record(docJson, id, RecordType.UPDATE, Consts.STORES_INDEX);
         } catch (Exception e) {
             LOG.error("Error parsing payload [" + payload);
             throw new ParseException("Error parsing payload", -1);

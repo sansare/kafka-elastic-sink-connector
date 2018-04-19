@@ -30,19 +30,25 @@ public class ElasticClientImpl implements ElasticClient {
         try {
             switch (record.getType()) {
                 case INSERT:
+                    log.error("Sending INDEX record" + record.toString());
                     client.execute(
                             new Index.Builder(record.getDoc())
                                     .index(record.getIndex())
                                     .id(record.getId())
                                     .type(type)
                                     .build());
+                    break;
                 case UPDATE:
+                    log.error("Sending UPDATE record" + record.toString());
                     client.execute(
                             new Update.Builder(record.getDoc())
                                     .index(record.getIndex())
                                     .id(record.getId())
                                     .type(type)
                                     .build());
+                    break;
+                default:
+                    log.info("Operation not supported");
             }
         } catch (IOException e) {
             log.error(e.toString());

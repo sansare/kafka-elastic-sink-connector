@@ -30,4 +30,14 @@ public class Record {
     public String getIndex() {
         return index;
     }
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "doc=" + doc +
+                ", id='" + id + '\'' +
+                ", type=" + type +
+                ", index='" + index + '\'' +
+                '}';
+    }
 }

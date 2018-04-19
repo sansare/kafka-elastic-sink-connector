@@ -12,9 +12,7 @@ public class Utils {
             if (element.isJsonObject()) {
                 JsonElement textElement = element.getAsJsonObject().get("text");
                 if (!textElement.isJsonNull()) {
-                    for (String token : textElement.getAsString().split("\\s+")) {
-                        suggestions.add(token);
-                    }
+                    suggestions.add(textElement.getAsString());
                 }
             }
         }

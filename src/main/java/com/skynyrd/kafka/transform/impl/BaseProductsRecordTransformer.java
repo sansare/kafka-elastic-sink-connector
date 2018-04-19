@@ -73,6 +73,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
     private Record createUpdateRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
         long views = payload.get("views").getAsLong();
+        long rating = payload.get("rating").getAsLong();
 
         String updScript =
                 "ctx._source.views = params.views;" +
@@ -83,10 +84,11 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         JsonObject scriptJson = new JsonObject();
         scriptJson.addProperty("source", updScript);
 
-        JsonObject viewsObj = new JsonObject();
-        viewsObj.addProperty("views", views);
+        JsonObject paramsObj = new JsonObject();
+        paramsObj.addProperty("views", views);
+        paramsObj.addProperty("rating", rating);
 
-        scriptJson.add("params", viewsObj);
+        scriptJson.add("params", paramsObj);
 
         docJson.add("script", scriptJson);
 
