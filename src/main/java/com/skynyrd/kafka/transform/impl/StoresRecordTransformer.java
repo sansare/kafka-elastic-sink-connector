@@ -66,7 +66,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
         } else {
             docJson.add(
                     "product_categories",
-                    gson.fromJson(prodCatJson, JsonArray.class)
+                    gson.fromJson(prodCatJson.getAsString(), JsonArray.class)
             );
         }
 

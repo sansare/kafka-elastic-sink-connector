@@ -30,7 +30,7 @@ public class ElasticClientImpl implements ElasticClient {
         try {
             switch (record.getType()) {
                 case INSERT:
-                    log.error("Sending INDEX record" + record.toString());
+                    log.info("Sending INDEX record" + record.toString());
                     client.execute(
                             new Index.Builder(record.getDoc())
                                     .index(record.getIndex())
@@ -39,7 +39,7 @@ public class ElasticClientImpl implements ElasticClient {
                                     .build());
                     break;
                 case UPDATE:
-                    log.error("Sending UPDATE record" + record.toString());
+                    log.info("Sending UPDATE record" + record.toString());
                     client.execute(
                             new Update.Builder(record.getDoc())
                                     .index(record.getIndex())

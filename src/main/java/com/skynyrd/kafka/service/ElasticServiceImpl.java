@@ -43,7 +43,7 @@ public class ElasticServiceImpl implements ElasticService {
     @Override
     public void process(Collection<SinkRecord> records) {
         records.forEach(record -> {
-            log.error("Record received: " + record.toString());
+            log.info("Record received: " + record.toString());
 
             try {
                 Optional<String> tableOpt = extractTable(record);
@@ -72,10 +72,10 @@ public class ElasticServiceImpl implements ElasticService {
 
         if (matcher.find()) {
             String table = matcher.group(1);
-            log.error("Extracted table: [" + table + "]");
+            log.info("Extracted table: [" + table + "]");
             return Optional.of(table);
         } else {
-            log.error("NO TABLE");
+            log.info("No table found in key " + record.key());
             return Optional.empty();
         }
     }
