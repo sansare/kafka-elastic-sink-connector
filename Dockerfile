@@ -1,4 +1,7 @@
-FROM alpine:latest
+FROM confluentinc/cp-kafka-connect:4.0.0
 
-COPY kc-plugins /data/kc-plugins
-VOLUME /data/kc-plugins
+ENV CONNECT_PLUGIN_PATH="/etc/kafka-connect/plugins"
+
+RUN mkdir -p /etc/kafka-connect/plugins
+COPY kc-plugins /etc/kafka-connect/plugins
+
