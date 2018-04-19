@@ -22,12 +22,10 @@ public class ElasticServiceImpl implements ElasticService {
     private static final Pattern TABLE_PATTERN =
             Pattern.compile("Struct\\{.*table=(.+)\\}");
 
-    private String indexName;
     private String typeName;
     private ElasticClient elasticClient;
 
     public ElasticServiceImpl(ElasticClient elasticClient, ElasticSinkConnectorConfig config) {
-        indexName = config.getIndexName();
         typeName = config.getTypeName();
 
         if(elasticClient == null) {

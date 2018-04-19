@@ -16,8 +16,6 @@ public class ElasticSinkConnectorConfig extends AbstractConfig {
   private static final String ELASTIC_URL_DOC = "Elastic URL to connect.";
   public static final String ELASTIC_PORT = "elastic.port";
   private static final String ELASTIC_PORT_DOC = "Elastic transport port to connect.";
-  public static final String INDEX_NAME = "index.name";
-  private static final String INDEX_NAME_DOC = "Elastic index name as target.";
 
   public ElasticSinkConnectorConfig(ConfigDef config, Map<String, String> parsedConfig) {
     super(config, parsedConfig);
@@ -31,16 +29,11 @@ public class ElasticSinkConnectorConfig extends AbstractConfig {
     return new ConfigDef()
         .define(TYPE_NAME, Type.STRING, Importance.HIGH, TYPE_NAME_DOC)
         .define(ELASTIC_URL, Type.STRING, Importance.HIGH, ELASTIC_URL_DOC)
-        .define(INDEX_NAME, Type.STRING, Importance.HIGH, INDEX_NAME_DOC)
         .define(ELASTIC_PORT, Type.INT, Importance.HIGH, ELASTIC_PORT_DOC);
   }
 
   public String getTypeName(){
     return this.getString(TYPE_NAME);
-  }
-
-  public String getIndexName(){
-    return this.getString(INDEX_NAME);
   }
 
   public String getElasticUrl(){
