@@ -49,7 +49,15 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
             } catch (Exception e) {
                 log.error(e);
             }
-            return new SinkPayload(op, after);
+
+            Optional<JsonObject> before = Optional.empty();
+            try {
+                before = Optional.of(recordAsJson.getAsJsonObject("payload").getAsJsonObject("before"));
+            } catch (Exception e) {
+                log.error(e);
+            }
+
+            return new SinkPayload(op, before, after);
         } catch (Exception e) {
             throw new ParseException("Error parsing record + " + record, -1);
         }

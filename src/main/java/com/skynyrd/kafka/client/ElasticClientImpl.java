@@ -47,6 +47,12 @@ public class ElasticClientImpl implements ElasticClient {
                                     .type(type)
                                     .build());
                     break;
+                case DELETE:
+                    log.info("Sending DELETE record" + record.toString());
+                    client.execute(
+                            new Delete.Builder(record.getId())
+                                    .type(type)
+                                    .build());
                 default:
                     log.info("Operation not supported");
             }

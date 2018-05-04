@@ -22,25 +22,35 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {
         SinkPayload sinkPayload = extractPayload(record);
-        Optional<JsonObject> payload = sinkPayload.getPayload();
-
-        if (!payload.isPresent()) {
-            return Optional.empty();
-        }
+        Optional<JsonObject> after = sinkPayload.getAfter();
+        Optional<JsonObject> before = sinkPayload.getAfter();
 
         switch (sinkPayload.getOp()) {
             case CREATE:
-                return Optional.of(createInsertRecord(payload.get()));
+                if (after.isPresent()) {
+                    return Optional.of(createInsertRecord(after.get()));
+                } else {
+                    return Optional.empty();
+                }
             case UPDATE:
-                return Optional.of(createUpdateRecord(payload.get()));
+                if (after.isPresent()) {
+                    return Optional.of(createUpdateRecord(after.get()));
+                } else {
+                    return Optional.empty();
+                }
+            case DELETE:
+                return before.map(this::createDeleteRecord);
             default:
                 return Optional.empty();
         }
     }
 
-    private JsonObject createDoc(JsonObject payload) {
+    private Record createDeleteRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
+        return new Record(new JsonObject(), id, RecordType.DELETE, Consts.PRODUCTS_INDEX);
+    }
 
+    private JsonObject createDoc(JsonObject payload) {
         JsonObject docJson = new JsonObject();
         docJson.addProperty("id", payload.get("id").getAsLong());
         docJson.addProperty("user_id", payload.get("user_id").getAsLong());

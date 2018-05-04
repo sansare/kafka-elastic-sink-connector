@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.skynyrd.kafka.Consts;
 import com.skynyrd.kafka.model.Record;
 import com.skynyrd.kafka.model.RecordType;
-import com.skynyrd.kafka.model.SinkOp;
 import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import com.skynyrd.kafka.transform.Utils;
@@ -19,20 +18,24 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {
         SinkPayload sinkPayload = extractPayload(record);
-        Optional<JsonObject> payload = sinkPayload.getPayload();
-
-        if (!payload.isPresent()) {
-            return Optional.empty();
-        }
+        Optional<JsonObject> after = sinkPayload.getAfter();
+        Optional<JsonObject> before = sinkPayload.getBefore();
 
         switch (sinkPayload.getOp()) {
             case CREATE:
-                return Optional.of(createInsertRecord(payload.get()));
+                return after.map(this::createInsertRecord);
             case UPDATE:
-                return Optional.of(createUpdateRecord(payload.get()));
+                return after.map(this::createUpdateRecord);
+            case DELETE:
+                return before.map(this::createDeleteRecord);
             default:
                 return Optional.empty();
         }
+    }
+
+    private Record createDeleteRecord(JsonObject payload) {
+        String id = payload.get("id").getAsString();
+        return new Record(new JsonObject(), id, RecordType.DELETE, Consts.PRODUCTS_INDEX);
     }
 
     private Record createInsertRecord(JsonObject payload) {

@@ -17,19 +17,65 @@ public class ProdAttrsRecordTransformer extends AbstractRecordTransformer {
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {
         SinkPayload sinkPayload = extractPayload(record);
-        Optional<JsonObject> payload = sinkPayload.getPayload();
-
-        if (!payload.isPresent()) {
-            return Optional.empty();
-        }
+        Optional<JsonObject> after = sinkPayload.getAfter();
+        Optional<JsonObject> before = sinkPayload.getBefore();
 
         switch (sinkPayload.getOp()) {
             case CREATE:
             case UPDATE:
-                return Optional.of(createRecord(payload.get()));
+                if (after.isPresent()) {
+                    return Optional.of(createRecord(after.get()));
+                } else {
+                    return Optional.empty();
+                }
+            case DELETE:
+                if (before.isPresent()) {
+                    return Optional.of(createDeleteRecord(before.get()));
+                } else {
+                    return Optional.empty();
+                }
             default:
                 return Optional.empty();
         }
+    }
+
+    private Record createDeleteRecord(JsonObject payload) throws ParseException {
+        String id = payload.get("base_prod_id").getAsString();
+
+        String updScript =
+                "def vars = ctx._source.variants;" +
+                "def var_param = params.variant;" +
+                "for (int i = 0; i < vars.length; i++) {" +
+                "    if (vars[i].prod_id == var_param.prod_id) {" +
+
+                "        def attrs_param = var_param.attrs;" +
+                "        for (int j = 0; j < attrs_param.length; j++) {" +
+
+                "            attr_to_remove = nil;" +
+                "            for (int k = 0; k < vars[i].attrs.length; k++) {" +
+                "                if (vars[i].attrs[k].attr_id == attrs_param[j].attr_id) {" +
+                "                    attr_to_remove = vars[i].attrs[k];" +
+                "                    break;" +
+                "                }" +
+                "            }" +
+
+                "            if (attr_to_remove != nil) {" +
+                "                vars[i].attrs.remove(attr_to_remove);" +
+                "            }" +
+                "        }" +
+                "        break;" +
+                "    }" +
+                "}";
+
+        JsonObject docJson = new JsonObject();
+
+        JsonObject scriptJson = new JsonObject();
+        scriptJson.addProperty("source", updScript);
+        scriptJson.add("params", createVariantWrapper(payload));
+
+        docJson.add("script", scriptJson);
+
+        return new Record(docJson, id, RecordType.UPDATE, Consts.PRODUCTS_INDEX);
     }
 
     private Record createRecord(JsonObject payload) throws ParseException {
