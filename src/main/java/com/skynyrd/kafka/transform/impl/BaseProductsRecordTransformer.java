@@ -73,12 +73,16 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
     private Record createUpdateRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
-        long views = payload.get("views").getAsLong();
-        long rating = payload.get("rating").getAsLong();
 
         String updScript =
+                "ctx._source.category_id = params.category_id;" +
+                "ctx._source.currency_id = params.currency_id;" +
+                "ctx._source.name = params.name;" +
+                "ctx._source.short_description = params.short_description;" +
+                "ctx._source.long_description = params.long_description;" +
                 "ctx._source.views = params.views;" +
-                "ctx._source.rating = params.rating;";
+                "ctx._source.rating = params.rating;" +
+                "ctx._source.suggest = params.suggest;";
 
         JsonObject docJson = new JsonObject();
 
@@ -86,8 +90,32 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         scriptJson.addProperty("source", updScript);
 
         JsonObject paramsObj = new JsonObject();
-        paramsObj.addProperty("views", views);
-        paramsObj.addProperty("rating", rating);
+
+        paramsObj.addProperty("category_id", payload.get("category_id").getAsLong());
+        paramsObj.addProperty("currency_id", payload.get("currency_id").getAsLong());
+        paramsObj.add(
+                "name",
+                gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+        );
+        paramsObj.add(
+                "short_description",
+                gson.fromJson(payload.get("short_description").getAsString(), JsonArray.class)
+        );
+        if (!payload.get("long_description").isJsonNull()) {
+            paramsObj.add(
+                    "long_description",
+                    gson.fromJson(payload.get("long_description").getAsString(), JsonArray.class)
+            );
+        }
+
+        paramsObj.addProperty("views", payload.get("views").getAsLong());
+        paramsObj.addProperty("rating", payload.get("rating").getAsLong());
+
+        paramsObj.add("suggest",
+                Utils.createLocalSuggestions(
+                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+                )
+        );
 
         scriptJson.add("params", paramsObj);
 

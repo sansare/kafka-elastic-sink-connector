@@ -44,6 +44,7 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
                 "    if (vars[i].prod_id == var_param.prod_id) {" +
                 "        vars[i].price = var_param.price;" +
                 "        vars[i].discount = var_param.discount;" +
+                "        vars[i].currency_id = var_param.currency_id;" +
                 "        updated = true;" +
                 "        break;" +
                 "    }" +
@@ -86,6 +87,11 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
             variantObj.addProperty("price", price * (1 - discount.getAsDouble()));
         } else {
             variantObj.addProperty("price", price);
+        }
+
+        JsonElement currencyId = payload.get("currency_id");
+        if (currencyId != null && !currencyId.isJsonNull()) {
+            variantObj.addProperty("currency_id", currencyId.getAsLong());
         }
 
         variantObj.add("attrs", new JsonArray());
