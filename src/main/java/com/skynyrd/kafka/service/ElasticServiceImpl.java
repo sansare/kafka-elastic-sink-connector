@@ -41,7 +41,7 @@ public class ElasticServiceImpl implements ElasticService {
     @Override
     public void process(Collection<SinkRecord> records) {
         records.forEach(record -> {
-            log.info("Record received: " + record.toString());
+            log.error("Record received: " + record.toString());
 
             try {
                 Optional<String> tableOpt = extractTable(record);

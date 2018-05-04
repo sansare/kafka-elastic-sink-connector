@@ -3,7 +3,8 @@ package com.skynyrd.kafka.model;
 public enum SinkOp {
     CREATE("c"),
     UPDATE("u"),
-    DELETE("d");
+    DELETE("d"),
+    UNKNOWN("");
 
     private String op;
 
@@ -17,8 +18,10 @@ public enum SinkOp {
                 return CREATE;
             case "u":
                 return UPDATE;
-            default:
+            case "d":
                 return DELETE;
+            default:
+                return UNKNOWN;
         }
     }
 }
