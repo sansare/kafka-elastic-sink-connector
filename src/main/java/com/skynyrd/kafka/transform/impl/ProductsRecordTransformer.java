@@ -91,7 +91,7 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
 
         JsonElement currencyId = payload.get("currency_id");
         if (currencyId != null && !currencyId.isJsonNull()) {
-            variantObj.addProperty("currency_id", currencyId.getAsDouble());
+            variantObj.addProperty("currency_id", currencyId.getAsLong());
         }
 
         variantObj.add("attrs", new JsonArray());
