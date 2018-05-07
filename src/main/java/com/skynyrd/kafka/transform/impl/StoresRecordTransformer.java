@@ -95,7 +95,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
             JsonObject docJson = createDoc(payload);
             return new Record(docJson, id, RecordType.INSERT, Consts.STORES_INDEX);
         } catch (Exception e) {
-            log.error("Error parsing payload [" + payload);
+            log.error("Error parsing payload [" + payload + "]");
             throw new ParseException("Error parsing payload", -1);
         }
     }
@@ -121,7 +121,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
 
             return new Record(docJson, id, RecordType.UPDATE, Consts.STORES_INDEX);
         } catch (Exception e) {
-            log.error("Error parsing payload [" + payload);
+            log.error("Error parsing payload [" + payload + "]");
             throw new ParseException("Error parsing payload", -1);
         }
     }
