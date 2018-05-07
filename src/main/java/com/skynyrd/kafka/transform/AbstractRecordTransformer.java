@@ -1,9 +1,6 @@
 package com.skynyrd.kafka.transform;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.skynyrd.kafka.model.SinkOp;
 import com.skynyrd.kafka.model.SinkPayload;
 import org.apache.kafka.connect.json.JsonConverter;
@@ -39,17 +36,34 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
             String recordStr = new String(rawJsonPayload, StandardCharsets.UTF_8);
             JsonObject recordAsJson = gson.fromJson(recordStr, JsonObject.class);
 
-
-            String opStr = recordAsJson.getAsJsonObject("payload").get("op").getAsString();
+            JsonElement payloadElem = recordAsJson.get("payload");
+            if (payloadElem == null || payloadElem.isJsonNull()) {
+                return new SinkPayload(SinkOp.UNKNOWN, Optional.empty(), Optional.empty());
+            }
+            String opStr = payloadElem.getAsJsonObject().get("op").getAsString();
             SinkOp op = SinkOp.fromStr(opStr);
 
-            Optional<JsonObject> after = Optional.empty();
+            Optional<JsonObject> before = Optional.empty();
             try {
-                after = Optional.of(recordAsJson.getAsJsonObject("payload").getAsJsonObject("after"));
+                JsonElement beforeElem = recordAsJson.getAsJsonObject("payload").get("before");
+                if (beforeElem != null && !beforeElem.isJsonNull()) {
+                    before = Optional.of(beforeElem.getAsJsonObject());
+                }
             } catch (Exception e) {
                 log.error(e);
             }
-            return new SinkPayload(op, after);
+
+            Optional<JsonObject> after = Optional.empty();
+            try {
+                JsonElement afterElem = recordAsJson.getAsJsonObject("payload").get("after");
+                if (afterElem != null && !afterElem.isJsonNull()) {
+                    after = Optional.of(afterElem.getAsJsonObject());
+                }
+            } catch (Exception e) {
+                log.error(e);
+            }
+
+            return new SinkPayload(op, before, after);
         } catch (Exception e) {
             throw new ParseException("Error parsing record + " + record, -1);
         }

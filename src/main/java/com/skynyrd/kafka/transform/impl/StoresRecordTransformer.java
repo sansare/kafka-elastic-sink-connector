@@ -17,30 +17,40 @@ import java.text.ParseException;
 import java.util.Optional;
 
 public class StoresRecordTransformer extends AbstractRecordTransformer {
-    private static Logger LOG = LogManager.getLogger(StoresRecordTransformer.class);
+    private static Logger log = LogManager.getLogger(StoresRecordTransformer.class);
 
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {
         SinkPayload sinkPayload = extractPayload(record);
-        Optional<JsonObject> payload = sinkPayload.getPayload();
-
-        if (!payload.isPresent()) {
-            return Optional.empty();
-        }
+        Optional<JsonObject> after = sinkPayload.getAfter();
+        Optional<JsonObject> before = sinkPayload.getBefore();
 
         switch (sinkPayload.getOp()) {
             case CREATE:
-                return Optional.of(createInsertRecord(payload.get()));
+                if (after.isPresent()) {
+                    return Optional.of(createInsertRecord(after.get()));
+                } else {
+                    return Optional.empty();
+                }
             case UPDATE:
-                return Optional.of(createUpdateRecord(payload.get()));
+                if (after.isPresent()) {
+                    return Optional.of(createUpdateRecord(after.get()));
+                } else {
+                    return Optional.empty();
+                }
+            case DELETE:
+                return before.map(this::createDeleteRecord);
             default:
                 return Optional.empty();
         }
     }
 
-    private JsonObject createDoc(JsonObject payload) {
+    private Record createDeleteRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
+        return new Record(new JsonObject(), id, RecordType.DELETE, Consts.STORES_INDEX);
+    }
 
+    private JsonObject createDoc(JsonObject payload) {
         JsonObject docJson = new JsonObject();
         docJson.addProperty("id", payload.get("id").getAsLong());
         docJson.addProperty("user_id", payload.get("user_id").getAsLong());
@@ -85,7 +95,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
             JsonObject docJson = createDoc(payload);
             return new Record(docJson, id, RecordType.INSERT, Consts.STORES_INDEX);
         } catch (Exception e) {
-            LOG.error("Error parsing payload [" + payload);
+            log.error("Error parsing payload [" + payload + "]");
             throw new ParseException("Error parsing payload", -1);
         }
     }
@@ -111,7 +121,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
 
             return new Record(docJson, id, RecordType.UPDATE, Consts.STORES_INDEX);
         } catch (Exception e) {
-            LOG.error("Error parsing payload [" + payload);
+            log.error("Error parsing payload [" + payload + "]");
             throw new ParseException("Error parsing payload", -1);
         }
     }
