@@ -17,13 +17,13 @@ import java.text.ParseException;
 import java.util.Optional;
 
 public class StoresRecordTransformer extends AbstractRecordTransformer {
-    private static Logger LOG = LogManager.getLogger(StoresRecordTransformer.class);
+    private static Logger log = LogManager.getLogger(StoresRecordTransformer.class);
 
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {
         SinkPayload sinkPayload = extractPayload(record);
         Optional<JsonObject> after = sinkPayload.getAfter();
-        Optional<JsonObject> before = sinkPayload.getAfter();
+        Optional<JsonObject> before = sinkPayload.getBefore();
 
         switch (sinkPayload.getOp()) {
             case CREATE:
@@ -47,7 +47,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
 
     private Record createDeleteRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
-        return new Record(new JsonObject(), id, RecordType.DELETE, Consts.PRODUCTS_INDEX);
+        return new Record(new JsonObject(), id, RecordType.DELETE, Consts.STORES_INDEX);
     }
 
     private JsonObject createDoc(JsonObject payload) {
@@ -95,7 +95,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
             JsonObject docJson = createDoc(payload);
             return new Record(docJson, id, RecordType.INSERT, Consts.STORES_INDEX);
         } catch (Exception e) {
-            LOG.error("Error parsing payload [" + payload);
+            log.error("Error parsing payload [" + payload);
             throw new ParseException("Error parsing payload", -1);
         }
     }
@@ -121,7 +121,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
 
             return new Record(docJson, id, RecordType.UPDATE, Consts.STORES_INDEX);
         } catch (Exception e) {
-            LOG.error("Error parsing payload [" + payload);
+            log.error("Error parsing payload [" + payload);
             throw new ParseException("Error parsing payload", -1);
         }
     }

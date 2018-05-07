@@ -34,6 +34,7 @@ public class ProdAttrsRecordTransformer extends AbstractRecordTransformer {
                 }
             case DELETE:
                 if (before.isPresent()) {
+                    log.error("Creating delete record--------------------------------");
                     return Optional.of(createDeleteRecord(before.get()));
                 } else {
                     return Optional.empty();
@@ -55,16 +56,16 @@ public class ProdAttrsRecordTransformer extends AbstractRecordTransformer {
                 "        def attrs_param = var_param.attrs;" +
                 "        for (int j = 0; j < attrs_param.length; j++) {" +
 
-                "            attr_to_remove = nil;" +
+                "            def attr_idx_to_remove = null;" +
                 "            for (int k = 0; k < vars[i].attrs.length; k++) {" +
                 "                if (vars[i].attrs[k].attr_id == attrs_param[j].attr_id) {" +
-                "                    attr_to_remove = vars[i].attrs[k];" +
+                "                    attr_idx_to_remove = k;" +
                 "                    break;" +
                 "                }" +
                 "            }" +
 
-                "            if (attr_to_remove != nil) {" +
-                "                vars[i].attrs.remove(attr_to_remove);" +
+                "            if (attr_idx_to_remove != null) {" +
+                "                vars[i].attrs.remove(attr_idx_to_remove);" +
                 "            }" +
                 "        }" +
                 "        break;" +

@@ -46,15 +46,15 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
         String updScript =
                 "def vars = ctx._source.variants;" +
                 "def var_param = params.variant;" +
+                "def product_idx_to_remove = null;" +
                 "for (int i = 0; i < vars.length; i++) {" +
-                "    product_to_remove = nil;" +
                 "    if (vars[i].prod_id == var_param.prod_id) {" +
-                "        product_to_remove = vars[i];" +
+                "        product_idx_to_remove = i;" +
                 "        break;" +
                 "    }" +
-                "    if (product_to_remove != nil) {" +
-                "        vars.remove(product_to_remove);" +
-                "    }" +
+                "}" +
+                "if (product_idx_to_remove != null) {" +
+                "    vars.remove(product_idx_to_remove);" +
                 "}";
 
         JsonObject docJson = new JsonObject();
