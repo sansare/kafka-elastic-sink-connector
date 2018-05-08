@@ -22,7 +22,6 @@ public class ProdAttrsRecordTransformer extends AbstractRecordTransformer {
         SinkPayload sinkPayload = extractPayload(record);
         Optional<JsonObject> after = sinkPayload.getAfter();
         Optional<JsonObject> before = sinkPayload.getBefore();
-        log.error(sinkPayload);
 
         switch (sinkPayload.getOp()) {
             case CREATE:
