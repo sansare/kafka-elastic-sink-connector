@@ -1,0 +1,10 @@
+pipeline:
+  trigger_build:
+    image: plugins/downstream
+    server: https://cd.stq.cloud
+    secrets: [ downstream_token ]
+    fork: true
+    repositories: [ StoriqaTeam/kafka-connect ]
+    when:
+      event: push
+      branch: master
