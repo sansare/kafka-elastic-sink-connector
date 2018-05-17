@@ -28,6 +28,8 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
                 return after.map(this::createUpdateRecord);
             case DELETE:
                 return before.map(this::createDeleteRecord);
+            case DB_SOFT_DELETE:
+                return after.map(this::createDeleteRecord);
             default:
                 return Optional.empty();
         }
@@ -42,9 +44,11 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         String id = payload.get("id").getAsString();
 
         JsonObject docJson = new JsonObject();
+
         docJson.addProperty("id", payload.get("id").getAsLong());
         docJson.addProperty("category_id", payload.get("category_id").getAsLong());
         docJson.addProperty("currency_id", payload.get("currency_id").getAsLong());
+
         docJson.add(
                 "name",
                 gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
@@ -62,8 +66,8 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         docJson.add("variants", new JsonArray());
 
         docJson.addProperty("views", payload.get("views").getAsLong());
-
         docJson.addProperty("rating", payload.get("rating").getAsLong());
+        docJson.addProperty("status", payload.get("status").getAsString());
 
         docJson.add("suggest",
                 Utils.createLocalSuggestions(
@@ -96,6 +100,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         paramsObj.addProperty("category_id", payload.get("category_id").getAsLong());
         paramsObj.addProperty("currency_id", payload.get("currency_id").getAsLong());
+
         paramsObj.add(
                 "name",
                 gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
@@ -113,6 +118,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         paramsObj.addProperty("views", payload.get("views").getAsLong());
         paramsObj.addProperty("rating", payload.get("rating").getAsLong());
+        paramsObj.addProperty("status", payload.get("status").getAsString());
 
         paramsObj.add("suggest",
                 Utils.createLocalSuggestions(

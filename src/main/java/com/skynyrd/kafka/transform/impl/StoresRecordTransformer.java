@@ -40,6 +40,8 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
                 }
             case DELETE:
                 return before.map(this::createDeleteRecord);
+            case DB_SOFT_DELETE:
+                return after.map(this::createDeleteRecord);
             default:
                 return Optional.empty();
         }
@@ -66,6 +68,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
         docJson.addProperty("country", country);
 
         docJson.addProperty("rating", payload.get("rating").getAsLong());
+        docJson.addProperty("status", payload.get("status").getAsLong());
 
         JsonElement prodCatJson = payload.get("product_categories");
         if (prodCatJson == null || prodCatJson.isJsonNull()) {

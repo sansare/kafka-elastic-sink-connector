@@ -63,6 +63,14 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
                 log.error(e);
             }
 
+            // Remove is_active=false from Elastic
+            if (after.isPresent()) {
+                JsonElement isActive = after.get().get("is_active");
+                if (isActive != null && isActive.isJsonPrimitive() && !isActive.getAsBoolean()) {
+                    op = SinkOp.DB_SOFT_DELETE;
+                }
+            }
+
             return new SinkPayload(op, before, after);
         } catch (Exception e) {
             throw new ParseException("Error parsing record + " + record, -1);

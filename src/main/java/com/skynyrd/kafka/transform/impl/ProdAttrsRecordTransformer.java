@@ -33,8 +33,13 @@ public class ProdAttrsRecordTransformer extends AbstractRecordTransformer {
                 }
             case DELETE:
                 if (before.isPresent()) {
-                    log.error("Creating delete record--------------------------------");
                     return Optional.of(createDeleteRecord(before.get()));
+                } else {
+                    return Optional.empty();
+                }
+            case DB_SOFT_DELETE:
+                if (after.isPresent()) {
+                    return Optional.of(createDeleteRecord(after.get()));
                 } else {
                     return Optional.empty();
                 }

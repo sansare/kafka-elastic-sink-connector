@@ -35,6 +35,12 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
                 } else {
                     return Optional.empty();
                 }
+            case DB_SOFT_DELETE:
+                if (after.isPresent()) {
+                    return Optional.of(createDeleteRecord(after.get()));
+                } else {
+                    return Optional.empty();
+                }
             default:
                 return Optional.empty();
         }
