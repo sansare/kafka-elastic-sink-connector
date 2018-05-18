@@ -4,6 +4,7 @@ public enum SinkOp {
     CREATE("c"),
     UPDATE("u"),
     DELETE("d"),
+    DB_SOFT_DELETE("dbsd"),
     UNKNOWN("");
 
     private String op;
