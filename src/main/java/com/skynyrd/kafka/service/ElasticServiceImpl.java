@@ -73,7 +73,7 @@ public class ElasticServiceImpl implements ElasticService {
             log.info("Extracted table: [" + table + "]");
             return Optional.of(table);
         } else {
-            log.info("No table found in key " + record.key());
+            log.info("No table found in key: " + record.key());
             return Optional.empty();
         }
     }
