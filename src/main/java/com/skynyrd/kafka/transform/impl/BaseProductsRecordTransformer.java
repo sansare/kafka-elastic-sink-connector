@@ -117,7 +117,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         }
 
         paramsObj.addProperty("views", payload.get("views").getAsLong());
-        paramsObj.addProperty("rating", payload.get("rating").getAsLong());
+        paramsObj.addProperty("rating", payload.get("rating").getAsDouble());
         paramsObj.addProperty("status", payload.get("status").getAsString());
 
         paramsObj.add("suggest",

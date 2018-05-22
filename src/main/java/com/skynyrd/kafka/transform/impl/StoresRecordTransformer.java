@@ -67,7 +67,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
                 : countryJson.getAsString();
         docJson.addProperty("country", country);
 
-        docJson.addProperty("rating", payload.get("rating").getAsLong());
+        docJson.addProperty("rating", payload.get("rating").getAsDouble());
         docJson.addProperty("status", payload.get("status").getAsString());
 
         JsonElement prodCatJson = payload.get("product_categories");
