@@ -8,7 +8,8 @@ import java.util.List;
 public interface ElasticClient {
     void send(Record record, String type);
 
-    void bulkSend(List<Record> records, String index, String type);
+    // See implementation for details
+    // void bulkSend(List<Record> records, String index, String type);
 
     void close() throws IOException;
 }
