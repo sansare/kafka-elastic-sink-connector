@@ -7,7 +7,7 @@
     </Appenders>
     <Loggers>
         <Root level="trace">
-            <AppenderRef ref="STDOUT" level="WARN"/>
+            <AppenderRef ref="STDOUT" level="DEBUG"/>
         </Root>
     </Loggers>
 </Configuration>
