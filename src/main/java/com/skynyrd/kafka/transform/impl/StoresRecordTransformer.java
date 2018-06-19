@@ -10,14 +10,13 @@ import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import com.skynyrd.kafka.transform.Utils;
 import org.apache.kafka.connect.sink.SinkRecord;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.util.Optional;
 
 public class StoresRecordTransformer extends AbstractRecordTransformer {
-    private static Logger log = LogManager.getLogger(StoresRecordTransformer.class);
+    private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public Optional<Record> apply(SinkRecord record) throws ParseException {

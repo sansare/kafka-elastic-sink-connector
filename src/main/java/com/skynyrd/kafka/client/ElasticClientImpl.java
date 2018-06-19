@@ -4,17 +4,18 @@ import com.skynyrd.kafka.model.Record;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
-import io.searchbox.core.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import io.searchbox.core.Delete;
+import io.searchbox.core.Index;
+import io.searchbox.core.Update;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.List;
 
 public class ElasticClientImpl implements ElasticClient {
+    private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+
     private JestClient client;
-    private static Logger log = LogManager.getLogger(ElasticClientImpl.class);
 
     public ElasticClientImpl(String url, int port) throws UnknownHostException {
         JestClientFactory factory = new JestClientFactory();
