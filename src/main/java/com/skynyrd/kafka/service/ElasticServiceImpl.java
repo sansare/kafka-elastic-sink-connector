@@ -7,8 +7,7 @@ import com.skynyrd.kafka.client.ElasticClientImpl;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
 import com.skynyrd.kafka.transform.RecordTransformerFactory;
 import org.apache.kafka.connect.sink.SinkRecord;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -17,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ElasticServiceImpl implements ElasticService {
-    private static Logger log = LogManager.getLogger(ElasticServiceImpl.class);
+    private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
     private static final Pattern TABLE_PATTERN =
             Pattern.compile("Struct\\{.*table=(.+)\\}");
@@ -60,7 +59,7 @@ public class ElasticServiceImpl implements ElasticService {
                     });
                 });
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error transforming record", e);
             }
         });
     }

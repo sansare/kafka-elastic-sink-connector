@@ -5,8 +5,7 @@ import com.skynyrd.kafka.model.SinkOp;
 import com.skynyrd.kafka.model.SinkPayload;
 import org.apache.kafka.connect.json.JsonConverter;
 import org.apache.kafka.connect.sink.SinkRecord;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -14,9 +13,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 public abstract class AbstractRecordTransformer implements RecordTransformer {
-    private static Logger log = LogManager.getLogger(AbstractRecordTransformer.class);
+    private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
-    protected JsonConverter jsonConverter;
+    private JsonConverter jsonConverter;
     protected Gson gson;
 
     public AbstractRecordTransformer() {
@@ -50,7 +49,7 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
                     before = Optional.of(beforeElem.getAsJsonObject());
                 }
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error extracting [before] value", e);
             }
 
             Optional<JsonObject> after = Optional.empty();
@@ -60,7 +59,7 @@ public abstract class AbstractRecordTransformer implements RecordTransformer {
                     after = Optional.of(afterElem.getAsJsonObject());
                 }
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error extracting [after] value", e);
             }
 
             // Remove is_active=false from Elastic
