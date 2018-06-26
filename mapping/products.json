@@ -49,8 +49,7 @@
         "type": "double"
       },
       "status": {
-        "type": "text",
-        "index": false
+        "type": "text"
       },
       "variants": {
         "type": "nested",
