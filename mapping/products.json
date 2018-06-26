@@ -1,0 +1,89 @@
+{
+  "properties": {
+      "name": {
+        "type": "nested",
+        "properties": {
+            "lang": {
+              "type": "text"
+            },
+            "text": {
+              "type": "text"
+            }
+        }
+      },
+      "short_description": {
+        "type": "nested",
+        "properties": {
+            "lang": {
+              "type": "text"
+            },
+            "text": {
+              "type": "text"
+            }
+        }
+      },
+      "long_description": {
+        "type": "nested",
+        "properties": {
+            "lang": {
+              "type": "text"
+            },
+            "text": {
+              "type": "text"
+            }
+        }
+      },
+      "id": {
+        "type": "integer"
+      },
+      "category_id": {
+        "type": "integer"
+      },
+      "store_id": {
+        "type": "integer"
+      },
+      "views": {
+        "type": "integer"
+      },
+      "rating": {
+        "type": "double"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "variants": {
+        "type": "nested",
+        "properties": {
+            "prod_id": {
+              "type": "integer"
+            },
+            "discount": {
+              "type": "double"
+            },
+            "price": {
+              "type": "double"
+            },
+            "currency_id": {
+              "type": "integer"
+            },
+            "attrs": {
+              "type": "nested",
+              "properties": {
+                "attr_id": {
+                    "type": "integer"
+                },
+                "float_val": {
+                    "type": "double"
+                },
+                "str_val": {
+                    "type": "text"
+                }
+              }
+            }
+        }
+      },
+      "suggest" : {
+          "type" : "completion"
+      }
+  }
+}

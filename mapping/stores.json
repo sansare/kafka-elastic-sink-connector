@@ -1,0 +1,53 @@
+{
+    "mappings": {
+        "_doc": {
+          "properties": {
+              "name": {
+                "type": "nested",
+                "properties": {
+                    "lang": {
+                      "type": "text"
+                    },
+                    "text": {
+                      "type": "text"
+                    }
+                }
+              },
+              "user_id": {
+                "type": "integer"
+              },
+              "rating": {
+                "type": "double"
+              },
+              "status": {
+                "type": "keyword"
+              },
+              "country": {
+                "type": "text",
+                "fields": {
+                  "keyword": { 
+                    "type": "keyword"
+                  }
+                }
+              },
+              "id": {
+                "type": "integer"
+              },
+              "product_categories": {
+                "type": "nested",
+                "properties": {
+                    "category_id": {
+                      "type": "integer"
+                    },
+                    "count": {
+                      "type": "integer"
+                    }
+                }
+              },
+              "suggest" : {
+                  "type" : "completion"
+              }
+          }
+        }
+    }
+}
