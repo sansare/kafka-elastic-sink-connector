@@ -70,9 +70,10 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         docJson.addProperty("rating", payload.get("rating").getAsLong());
         docJson.addProperty("status", payload.get("status").getAsString());
 
-        docJson.add("suggest",
-                Utils.createLocalSuggestions(
-                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+        docJson.add("suggest_",
+                Utils.createProductSuggestions(
+                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class),
+                        payload.get("store_id").getAsLong()
                 )
         );
 
@@ -122,9 +123,10 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         paramsObj.addProperty("rating", payload.get("rating").getAsDouble());
         paramsObj.addProperty("status", payload.get("status").getAsString());
 
-        paramsObj.add("suggest",
-                Utils.createLocalSuggestions(
-                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+        paramsObj.add("suggest_",
+                Utils.createProductSuggestions(
+                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class),
+                        payload.get("store_id").getAsLong()
                 )
         );
 
