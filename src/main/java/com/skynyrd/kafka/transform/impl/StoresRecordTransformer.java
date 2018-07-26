@@ -83,7 +83,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
         }
 
         docJson.add("suggest",
-                Utils.createLocalSuggestions(
+                Utils.createStoreSuggestions(
                         gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
                 )
         );

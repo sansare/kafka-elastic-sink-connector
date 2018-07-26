@@ -82,8 +82,14 @@
             }
         }
       },
-      "suggest" : {
-          "type" : "completion"
+      "suggest_" : {
+          "type" : "completion",
+          "contexts": [
+            {
+              "name": "store",
+              "type": "category"
+            }
+          ]
       }
   }
 }
