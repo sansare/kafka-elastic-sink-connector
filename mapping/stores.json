@@ -42,8 +42,14 @@
                 }
             }
         },
-        "suggest": {
-            "type": "completion"
+        "suggest_2" : {
+            "type" : "completion",
+            "contexts": [
+                {
+                    "name": "status",
+                    "type": "category"
+                }
+            ]
         }
     }
 }

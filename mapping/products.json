@@ -82,11 +82,11 @@
             }
         }
       },
-      "suggest_" : {
+      "suggest_2" : {
           "type" : "completion",
           "contexts": [
             {
-              "name": "store",
+              "name": "store_and_status",
               "type": "category"
             }
           ]
