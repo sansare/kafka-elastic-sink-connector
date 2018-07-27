@@ -82,9 +82,10 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
             );
         }
 
-        docJson.add("suggest",
+        docJson.add("suggest_2",
                 Utils.createStoreSuggestions(
-                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
+                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class),
+                        payload.get("status").getAsString()
                 )
         );
 
