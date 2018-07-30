@@ -52,6 +52,8 @@ public class Utils {
         JsonArray store_and_status = new JsonArray();
         //workaround because elastic doesn't afford to ANY contexts
         store_and_status.add(store_id.toString() + "_" + moderation_status);
+        //workaround because context also need to filter on published status
+        store_and_status.add(moderation_status);
 
         JsonObject contexts = new JsonObject();
         contexts.add("store_and_status", store_and_status);
