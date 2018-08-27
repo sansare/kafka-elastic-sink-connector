@@ -63,8 +63,8 @@
             "price": {
               "type": "double"
             },
-            "currency_id": {
-              "type": "integer"
+            "currency": {
+              "type": "keyword"
             },
             "attrs": {
               "type": "nested",

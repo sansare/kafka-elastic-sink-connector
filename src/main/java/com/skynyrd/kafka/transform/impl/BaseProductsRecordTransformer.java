@@ -47,7 +47,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         docJson.addProperty("id", payload.get("id").getAsLong());
         docJson.addProperty("category_id", payload.get("category_id").getAsLong());
-        docJson.addProperty("currency_id", payload.get("currency_id").getAsLong());
+        docJson.addProperty("currency", payload.get("currency").getAsString());
         docJson.addProperty("store_id", payload.get("store_id").getAsLong());
 
         docJson.add(
@@ -86,7 +86,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         String updScript =
                 "ctx._source.category_id = params.category_id;" +
-                "ctx._source.currency_id = params.currency_id;" +
+                "ctx._source.currency = params.currency;" +
                 "ctx._source.store_id = params.store_id;" +
                 "ctx._source.name = params.name;" +
                 "ctx._source.short_description = params.short_description;" +
@@ -104,7 +104,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         JsonObject paramsObj = new JsonObject();
 
         paramsObj.addProperty("category_id", payload.get("category_id").getAsLong());
-        paramsObj.addProperty("currency_id", payload.get("currency_id").getAsLong());
+        paramsObj.addProperty("currency", payload.get("currency").getAsString());
         paramsObj.addProperty("store_id", payload.get("store_id").getAsLong());
 
         paramsObj.add(
