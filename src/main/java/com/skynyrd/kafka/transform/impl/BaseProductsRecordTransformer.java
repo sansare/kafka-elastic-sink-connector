@@ -49,6 +49,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         docJson.addProperty("category_id", payload.get("category_id").getAsLong());
         docJson.addProperty("currency", payload.get("currency").getAsString());
         docJson.addProperty("store_id", payload.get("store_id").getAsLong());
+        docJson.addProperty("store_status", payload.get("store_status").getAsString());
 
         docJson.add(
                 "name",
@@ -106,6 +107,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         paramsObj.addProperty("category_id", payload.get("category_id").getAsLong());
         paramsObj.addProperty("currency", payload.get("currency").getAsString());
         paramsObj.addProperty("store_id", payload.get("store_id").getAsLong());
+        paramsObj.addProperty("store_status", payload.get("store_status").getAsString());
 
         paramsObj.add(
                 "name",
