@@ -71,7 +71,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         docJson.addProperty("rating", payload.get("rating").getAsLong());
         docJson.addProperty("status", payload.get("status").getAsString());
 
-        docJson.add("suggest_2",
+        docJson.add("suggest",
                 Utils.createProductSuggestions(
                         gson.fromJson(payload.get("name").getAsString(), JsonArray.class),
                         payload.get("store_id").getAsLong(),
@@ -95,7 +95,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
                 "ctx._source.views = params.views;" +
                 "ctx._source.rating = params.rating;" +
                 "ctx._source.status = params.status;" +
-                "ctx._source.suggest_2 = params.suggest_2;";
+                "ctx._source.suggest = params.suggest;";
 
         JsonObject docJson = new JsonObject();
 
@@ -128,7 +128,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         paramsObj.addProperty("rating", payload.get("rating").getAsDouble());
         paramsObj.addProperty("status", payload.get("status").getAsString());
 
-        paramsObj.add("suggest_2",
+        paramsObj.add("suggest",
                 Utils.createProductSuggestions(
                         gson.fromJson(payload.get("name").getAsString(), JsonArray.class),
                         payload.get("store_id").getAsLong(),
