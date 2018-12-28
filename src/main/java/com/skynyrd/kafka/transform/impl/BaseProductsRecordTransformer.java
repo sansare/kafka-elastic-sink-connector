@@ -95,6 +95,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
                 "ctx._source.views = params.views;" +
                 "ctx._source.rating = params.rating;" +
                 "ctx._source.status = params.status;" +
+                "ctx._source.store_status = params.store_status;" +
                 "ctx._source.suggest = params.suggest;";
 
         JsonObject docJson = new JsonObject();
