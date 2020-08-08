@@ -4,7 +4,7 @@ pipeline:
     server: https://cd.stq.cloud
     secrets: [ downstream_token ]
     fork: true
-    repositories: [ StoriqaTeam/kafka-connect ]
+    repositories: [ sansare/kafka-connect ]
     when:
       event: push
       branch: master
