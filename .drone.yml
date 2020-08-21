@@ -1,7 +1,7 @@
 pipeline:
   trigger_build:
     image: plugins/downstream
-    server: https://cd.stq.cloud
+    server: https://cd.grame.cloud
     secrets: [ downstream_token ]
     fork: true
     repositories: [ sansare/kafka-connect ]
