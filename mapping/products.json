@@ -1,15 +1,10 @@
 {
   "properties": {
-    "category_id": {
+    "id": {
       "type": "integer"
     },
-    "country": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "type": "keyword"
-        }
-      }
+    "category_id": {
+      "type": "integer"
     },
     "currency": {
       "type": "text",
@@ -20,22 +15,11 @@
         }
       }
     },
-    "currency_id": {
-      "type": "long"
-    },
-    "id": {
+    "store_id": {
       "type": "integer"
     },
-    "long_description": {
-      "type": "nested",
-      "properties": {
-        "lang": {
-          "type": "text"
-        },
-        "text": {
-          "type": "text"
-        }
-      }
+    "store_status": {
+      "type": "keyword"
     },
     "name": {
       "type": "nested",
@@ -50,20 +34,6 @@
         }
       }
     },
-    "product_categories": {
-      "type": "nested",
-      "properties": {
-        "category_id": {
-          "type": "integer"
-        },
-        "count": {
-          "type": "integer"
-        }
-      }
-    },
-    "rating": {
-      "type": "double"
-    },
     "short_description": {
       "type": "nested",
       "properties": {
@@ -75,27 +45,16 @@
         }
       }
     },
-    "status": {
-      "type": "keyword"
-    },
-    "store_id": {
-      "type": "integer"
-    },
-    "suggest": {
-      "type": "completion",
-      "analyzer": "simple",
-      "preserve_separators": true,
-      "preserve_position_increments": true,
-      "max_input_length": 50,
-      "contexts": [
-        {
-          "name": "store_and_status",
-          "type": "CATEGORY"
+    "long_description": {
+      "type": "nested",
+      "properties": {
+        "lang": {
+          "type": "text"
+        },
+        "text": {
+          "type": "text"
         }
-      ]
-    },
-    "user_id": {
-      "type": "integer"
+      }
     },
     "variants": {
       "type": "nested",
@@ -117,9 +76,6 @@
         "currency": {
           "type": "keyword"
         },
-        "currency_id": {
-          "type": "integer"
-        },
         "discount": {
           "type": "double"
         },
@@ -134,8 +90,46 @@
     "views": {
       "type": "integer"
     },
-    "store_status": {
+    "rating": {
+      "type": "double"
+    },
+    "status": {
       "type": "keyword"
+    },
+    "suggest": {
+      "type": "completion",
+      "analyzer": "simple",
+      "preserve_separators": true,
+      "preserve_position_increments": true,
+      "max_input_length": 50,
+      "contexts": [
+        {
+          "name": "store_and_status",
+          "type": "CATEGORY"
+        }
+      ]
+    },
+    "country": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword"
+        }
+      }
+    },
+    "product_categories": {
+      "type": "nested",
+      "properties": {
+        "category_id": {
+          "type": "integer"
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "user_id": {
+      "type": "integer"
     }
   }
 }

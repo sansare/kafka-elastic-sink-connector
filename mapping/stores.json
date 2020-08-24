@@ -1,14 +1,9 @@
 {
   "properties": {
-    "country": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "type": "keyword"
-        }
-      }
-    },
     "id": {
+      "type": "integer"
+    },
+    "user_id": {
       "type": "integer"
     },
     "name": {
@@ -24,6 +19,20 @@
         }
       }
     },
+    "country": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword"
+        }
+      }
+    },
+    "rating": {
+      "type": "double"
+    },
+    "status": {
+      "type": "keyword"
+    },
     "product_categories": {
       "type": "nested",
       "properties": {
@@ -34,12 +43,6 @@
           "type": "integer"
         }
       }
-    },
-    "rating": {
-      "type": "double"
-    },
-    "status": {
-      "type": "keyword"
     },
     "suggest": {
       "type": "completion",
@@ -53,9 +56,6 @@
           "type": "CATEGORY"
         }
       ]
-    },
-    "user_id": {
-      "type": "integer"
     }
   }
 }
