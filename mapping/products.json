@@ -43,7 +43,7 @@
         "lang": {
           "type": "text"
         },
-        "text": {
+        "name": {
           "type": "text",
           "analyzer": "products_ngram_analyzer",
           "search_analyzer": "standard"
