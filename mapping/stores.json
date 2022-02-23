@@ -17,7 +17,7 @@
         "lang": {
           "type": "text"
         },
-        "name": {
+        "text": {
           "type": "text",
           "analyzer": "stores_ngram_analyzer",
           "search_analyzer": "standard"
