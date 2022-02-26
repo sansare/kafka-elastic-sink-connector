@@ -1,4 +1,5 @@
 {
+  "max_ngram_diff": 20,
   "analysis": {
     "analyzer": {
       "stores_ngram_analyzer": {
