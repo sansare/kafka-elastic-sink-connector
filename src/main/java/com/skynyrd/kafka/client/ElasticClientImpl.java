@@ -15,7 +15,7 @@ import java.net.UnknownHostException;
 public class ElasticClientImpl implements ElasticClient {
     private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
-    private JestClient client;
+    private final JestClient client;
 
     public ElasticClientImpl(String url, int port) throws UnknownHostException {
         JestClientFactory factory = new JestClientFactory();
