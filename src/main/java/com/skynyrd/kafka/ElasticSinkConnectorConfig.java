@@ -25,7 +25,11 @@ public class ElasticSinkConnectorConfig extends AbstractConfig {
     public static ConfigDef conf() {
         return new ConfigDef()
                 .define(TYPE_NAME, Type.STRING, Importance.HIGH, TYPE_NAME_DOC)
-                .define(CONNECTION_URL, Type.STRING, Importance.HIGH, CONNECTION_URL_DOC);
+                .define(CONNECTION_URL, Type.STRING, Importance.HIGH, CONNECTION_URL_DOC)
+                .define("key.converter", Type.STRING, Importance.HIGH, "key.converter")
+                .define("value.converter", Type.STRING, Importance.HIGH, "value.converter")
+                .define("tasks.max", Type.STRING, Importance.HIGH, "tasks.max")
+                .define("topics", Type.STRING, Importance.HIGH, "topics");
     }
 
     public String getTypeName() {
