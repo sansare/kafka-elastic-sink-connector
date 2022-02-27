@@ -17,10 +17,10 @@ public class ElasticClientImpl implements ElasticClient {
 
     private final JestClient client;
 
-    public ElasticClientImpl(String url, int port) throws UnknownHostException {
+    public ElasticClientImpl(String url) throws UnknownHostException {
         JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig
-                .Builder(String.format("http://%s:%s", url, port))
+                .Builder(String.format("http://%s", url))
                 .multiThreaded(true)
                 .build());
 
