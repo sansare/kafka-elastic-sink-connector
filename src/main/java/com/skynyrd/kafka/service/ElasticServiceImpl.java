@@ -18,8 +18,7 @@ import java.util.regex.Pattern;
 public class ElasticServiceImpl implements ElasticService {
     private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final Pattern TABLE_PATTERN =
-            Pattern.compile("Struct\\{.*table=(.+)\\}");
+    private static final Pattern TABLE_PATTERN = Pattern.compile("Struct\\{.*table=(.+)\\}");
 
     private final String typeName;
     private final ElasticClient elasticClient;
@@ -27,7 +26,7 @@ public class ElasticServiceImpl implements ElasticService {
     public ElasticServiceImpl(ElasticClient elasticClient, ElasticSinkConnectorConfig config) {
         typeName = config.getTypeName();
 
-        if(elasticClient == null) {
+        if (elasticClient == null) {
             try {
                 elasticClient = new ElasticClientImpl(config.getElasticUrl(), config.getElasticPort());
             } catch (UnknownHostException e) {
@@ -46,9 +45,7 @@ public class ElasticServiceImpl implements ElasticService {
                 Optional<String> tableOpt = extractTable(record);
 
                 tableOpt.ifPresent(table -> {
-                    Optional<AbstractRecordTransformer> recordTransformer =
-                            RecordTransformerFactory.getTransformer(table);
-
+                    Optional<AbstractRecordTransformer> recordTransformer = RecordTransformerFactory.getTransformer(table);
                     recordTransformer.ifPresent(transformer -> {
                         try {
                             Optional<Record> transformedRecord = transformer.apply(record);

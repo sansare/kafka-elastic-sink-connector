@@ -5,9 +5,9 @@ import com.google.gson.JsonObject;
 import java.util.Optional;
 
 public class SinkPayload {
-    private SinkOp op;
-    private Optional<JsonObject> before;
-    private Optional<JsonObject> after;
+    private final SinkOp op;
+    private final Optional<JsonObject> before;
+    private final Optional<JsonObject> after;
 
     public SinkPayload(SinkOp op, Optional<JsonObject> before, Optional<JsonObject> after) {
         this.op = op;

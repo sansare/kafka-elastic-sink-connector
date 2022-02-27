@@ -28,8 +28,8 @@ public class Utils {
         contexts.add("status", status);
 
         JsonObject suggestions = new JsonObject();
-        suggestions.add("input",input);
-        suggestions.add("contexts",contexts);
+        suggestions.add("input", input);
+        suggestions.add("contexts", contexts);
 
         return suggestions;
     }
@@ -59,8 +59,8 @@ public class Utils {
         contexts.add("store_and_status", store_and_status);
 
         JsonObject suggestions = new JsonObject();
-        suggestions.add("input",input);
-        suggestions.add("contexts",contexts);
+        suggestions.add("input", input);
+        suggestions.add("contexts", contexts);
 
         return suggestions;
     }

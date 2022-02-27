@@ -51,19 +51,10 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         docJson.addProperty("store_id", payload.get("store_id").getAsLong());
         docJson.addProperty("store_status", payload.get("store_status").getAsString());
 
-        docJson.add(
-                "name",
-                gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
-        );
-        docJson.add(
-                "short_description",
-                gson.fromJson(payload.get("short_description").getAsString(), JsonArray.class)
-        );
+        docJson.add("name", gson.fromJson(payload.get("name").getAsString(), JsonArray.class));
+        docJson.add("short_description", gson.fromJson(payload.get("short_description").getAsString(), JsonArray.class));
         if (!payload.get("long_description").isJsonNull()) {
-            docJson.add(
-                    "long_description",
-                    gson.fromJson(payload.get("long_description").getAsString(), JsonArray.class)
-            );
+            docJson.add("long_description", gson.fromJson(payload.get("long_description").getAsString(), JsonArray.class));
         }
         docJson.add("variants", new JsonArray());
 
@@ -71,13 +62,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         docJson.addProperty("rating", payload.get("rating").getAsLong());
         docJson.addProperty("status", payload.get("status").getAsString());
 
-        docJson.add("suggest",
-                Utils.createProductSuggestions(
-                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class),
-                        payload.get("store_id").getAsLong(),
-                        payload.get("status").getAsString()
-                )
-        );
+        docJson.add("suggest", Utils.createProductSuggestions(gson.fromJson(payload.get("name").getAsString(), JsonArray.class), payload.get("store_id").getAsLong(), payload.get("status").getAsString()));
 
         return new Record(docJson, id, RecordType.INSERT, Consts.PRODUCTS_INDEX);
     }
@@ -85,18 +70,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
     private Record createUpdateRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
 
-        String updScript =
-                "ctx._source.category_id = params.category_id;" +
-                "ctx._source.currency = params.currency;" +
-                "ctx._source.store_id = params.store_id;" +
-                "ctx._source.name = params.name;" +
-                "ctx._source.short_description = params.short_description;" +
-                "ctx._source.long_description = params.long_description;" +
-                "ctx._source.views = params.views;" +
-                "ctx._source.rating = params.rating;" +
-                "ctx._source.status = params.status;" +
-                "ctx._source.store_status = params.store_status;" +
-                "ctx._source.suggest = params.suggest;";
+        String updScript = "ctx._source.category_id = params.category_id;" + "ctx._source.currency = params.currency;" + "ctx._source.store_id = params.store_id;" + "ctx._source.name = params.name;" + "ctx._source.short_description = params.short_description;" + "ctx._source.long_description = params.long_description;" + "ctx._source.views = params.views;" + "ctx._source.rating = params.rating;" + "ctx._source.status = params.status;" + "ctx._source.store_status = params.store_status;" + "ctx._source.suggest = params.suggest;";
 
         JsonObject docJson = new JsonObject();
 
@@ -110,32 +84,17 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         paramsObj.addProperty("store_id", payload.get("store_id").getAsLong());
         paramsObj.addProperty("store_status", payload.get("store_status").getAsString());
 
-        paramsObj.add(
-                "name",
-                gson.fromJson(payload.get("name").getAsString(), JsonArray.class)
-        );
-        paramsObj.add(
-                "short_description",
-                gson.fromJson(payload.get("short_description").getAsString(), JsonArray.class)
-        );
+        paramsObj.add("name", gson.fromJson(payload.get("name").getAsString(), JsonArray.class));
+        paramsObj.add("short_description", gson.fromJson(payload.get("short_description").getAsString(), JsonArray.class));
         if (!payload.get("long_description").isJsonNull()) {
-            paramsObj.add(
-                    "long_description",
-                    gson.fromJson(payload.get("long_description").getAsString(), JsonArray.class)
-            );
+            paramsObj.add("long_description", gson.fromJson(payload.get("long_description").getAsString(), JsonArray.class));
         }
 
         paramsObj.addProperty("views", payload.get("views").getAsLong());
         paramsObj.addProperty("rating", payload.get("rating").getAsDouble());
         paramsObj.addProperty("status", payload.get("status").getAsString());
 
-        paramsObj.add("suggest",
-                Utils.createProductSuggestions(
-                        gson.fromJson(payload.get("name").getAsString(), JsonArray.class),
-                        payload.get("store_id").getAsLong(),
-                        payload.get("status").getAsString()
-                )
-        );
+        paramsObj.add("suggest", Utils.createProductSuggestions(gson.fromJson(payload.get("name").getAsString(), JsonArray.class), payload.get("store_id").getAsLong(), payload.get("status").getAsString()));
 
         scriptJson.add("params", paramsObj);
 
