@@ -28,7 +28,7 @@ public class ElasticServiceImpl implements ElasticService {
 
         if (elasticClient == null) {
             try {
-                elasticClient = new ElasticClientImpl(config.getElasticUrl());
+                elasticClient = new ElasticClientImpl(config.getElasticUrl(), config.getElasticPort());
             } catch (UnknownHostException e) {
                 log.error("The host is unknown, exception stacktrace: " + e.toString());
             }

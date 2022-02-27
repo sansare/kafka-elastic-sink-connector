@@ -17,13 +17,9 @@ public class ElasticClientImpl implements ElasticClient {
 
     private final JestClient client;
 
-    public ElasticClientImpl(String url) throws UnknownHostException {
+    public ElasticClientImpl(String url, int port) throws UnknownHostException {
         JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig
-                .Builder(String.format("http://%s", url))
-                .multiThreaded(true)
-                .build());
-
+        factory.setHttpClientConfig(new HttpClientConfig.Builder(String.format("http://%s:%s", url, port)).multiThreaded(true).build());
         client = factory.getObject();
     }
 
@@ -31,30 +27,16 @@ public class ElasticClientImpl implements ElasticClient {
         try {
             switch (record.getType()) {
                 case INSERT:
-                    log.info("Sending INDEX record" + record.toString());
-                    client.execute(
-                            new Index.Builder(record.getDoc())
-                                    .index(record.getIndex())
-                                    .id(record.getId())
-                                    .type(type)
-                                    .build());
+                    log.info("Sending INDEX record -" + record.toString());
+                    client.execute(new Index.Builder(record.getDoc()).index(record.getIndex()).id(record.getId()).type(type).build());
                     break;
                 case UPDATE:
-                    log.info("Sending UPDATE record" + record.toString());
-                    client.execute(
-                            new Update.Builder(record.getDoc())
-                                    .index(record.getIndex())
-                                    .id(record.getId())
-                                    .type(type)
-                                    .build());
+                    log.info("Sending UPDATE record -" + record.toString());
+                    client.execute(new Update.Builder(record.getDoc()).index(record.getIndex()).id(record.getId()).type(type).build());
                     break;
                 case DELETE:
-                    log.info("Sending DELETE record" + record.toString());
-                    client.execute(
-                            new Delete.Builder(record.getId())
-                                    .index(record.getIndex())
-                                    .type(type)
-                                    .build()).getErrorMessage();
+                    log.info("Sending DELETE record -" + record.toString());
+                    client.execute(new Delete.Builder(record.getId()).index(record.getIndex()).type(type).build()).getErrorMessage();
                 default:
                     log.info("Operation not supported");
             }
