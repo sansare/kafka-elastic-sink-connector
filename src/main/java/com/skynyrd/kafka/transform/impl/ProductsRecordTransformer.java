@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.Consts;
-import com.skynyrd.kafka.model.Record;
+import com.skynyrd.kafka.model.RecordSink;
 import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class ProductsRecordTransformer extends AbstractRecordTransformer {
 
     @Override
-    public Optional<Record> apply(SinkRecord record) throws ParseException {
+    public Optional<RecordSink> apply(SinkRecord record) throws ParseException {
         SinkPayload sinkPayload = extractPayload(record);
         Optional<JsonObject> after = sinkPayload.getAfter();
         Optional<JsonObject> before = sinkPayload.getBefore();
@@ -46,7 +46,7 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
         }
     }
 
-    private Record createDeleteRecord(JsonObject payload) throws ParseException {
+    private RecordSink createDeleteRecord(JsonObject payload) throws ParseException {
         String id = payload.get("base_product_id").getAsString();
 
         String updScript =
@@ -71,10 +71,10 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
 
         docJson.add("script", scriptJson);
 
-        return new Record(docJson, id, RecordType.UPDATE, Consts.PRODUCTS_INDEX);
+        return new RecordSink(docJson, id, RecordType.UPDATE, Consts.PRODUCTS_INDEX);
     }
 
-    private Record createRecord(JsonObject payload) throws ParseException {
+    private RecordSink createRecord(JsonObject payload) throws ParseException {
         String id = payload.get("base_product_id").getAsString();
 
         String updScript =
@@ -102,7 +102,7 @@ public class ProductsRecordTransformer extends AbstractRecordTransformer {
 
         docJson.add("script", scriptJson);
 
-        return new Record(docJson, id, RecordType.UPDATE, Consts.PRODUCTS_INDEX);
+        return new RecordSink(docJson, id, RecordType.UPDATE, Consts.PRODUCTS_INDEX);
     }
 
     private JsonObject createVariantWrapper(JsonObject payload) throws ParseException {

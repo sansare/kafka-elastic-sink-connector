@@ -2,13 +2,13 @@ package com.skynyrd.kafka.model;
 
 import com.google.gson.JsonObject;
 
-public class Record {
+public class RecordSink {
     private final JsonObject doc;
     private final String id;
     private final RecordType type;
     private final String index;
 
-    public Record(JsonObject doc, String id, RecordType type, String index) {
+    public RecordSink(JsonObject doc, String id, RecordType type, String index) {
         this.doc = doc;
         this.id = id;
         this.type = type;
@@ -33,7 +33,7 @@ public class Record {
 
     @Override
     public String toString() {
-        return "Record{" +
+        return "RecordSink{" +
                 "doc=" + doc +
                 ", id='" + id + '\'' +
                 ", type=" + type +

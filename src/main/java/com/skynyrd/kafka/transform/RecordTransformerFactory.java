@@ -1,7 +1,7 @@
 package com.skynyrd.kafka.transform;
 
-import com.skynyrd.kafka.transform.impl.ProdAttrsRecordTransformer;
 import com.skynyrd.kafka.transform.impl.BaseProductsRecordTransformer;
+import com.skynyrd.kafka.transform.impl.ProdAttrsRecordTransformer;
 import com.skynyrd.kafka.transform.impl.ProductsRecordTransformer;
 import com.skynyrd.kafka.transform.impl.StoresRecordTransformer;
 

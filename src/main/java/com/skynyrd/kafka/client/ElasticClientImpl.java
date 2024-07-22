@@ -1,6 +1,6 @@
 package com.skynyrd.kafka.client;
 
-import com.skynyrd.kafka.model.Record;
+import com.skynyrd.kafka.model.RecordSink;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
@@ -23,19 +23,19 @@ public class ElasticClientImpl implements ElasticClient {
         client = factory.getObject();
     }
 
-    public void send(Record record, String type) {
+    public void send(RecordSink record, String type) {
         try {
             switch (record.getType()) {
                 case INSERT:
-                    log.info("Sending INDEX record -" + record.toString());
+                    log.info("Sending INDEX record -{}", record.toString());
                     client.execute(new Index.Builder(record.getDoc()).index(record.getIndex()).id(record.getId()).type(type).build());
                     break;
                 case UPDATE:
-                    log.info("Sending UPDATE record -" + record.toString());
+                    log.info("Sending UPDATE record -{}", record.toString());
                     client.execute(new Update.Builder(record.getDoc()).index(record.getIndex()).id(record.getId()).type(type).build());
                     break;
                 case DELETE:
-                    log.info("Sending DELETE record -" + record.toString());
+                    log.info("Sending DELETE record -{}", record.toString());
                     client.execute(new Delete.Builder(record.getId()).index(record.getIndex()).type(type).build()).getErrorMessage();
                 default:
                     log.info("Operation not supported");
@@ -48,7 +48,7 @@ public class ElasticClientImpl implements ElasticClient {
 
     // ATTENTION: use with care, documents can be written to Elastic in a wrong order. Left for reference purposes.
 
-//    public void bulkSend(List<Record> records, String index, String type) {
+//    public void bulkSend(List<RecordSink> records, String index, String type) {
 //        Bulk.Builder indexBuilder = new Bulk.Builder()
 //                .defaultIndex(index)
 //                .defaultType(type);
@@ -58,7 +58,7 @@ public class ElasticClientImpl implements ElasticClient {
 //
 //        boolean indexPresent = false;
 //        boolean updatePresent = false;
-//        for (Record record : records) {
+//        for (RecordSink record : records) {
 //            switch (record.getType()) {
 //                case UPDATE:
 //                    updateBuilder.addAction(new Update.Builder(record.getDoc()).id(record.getId()).build());

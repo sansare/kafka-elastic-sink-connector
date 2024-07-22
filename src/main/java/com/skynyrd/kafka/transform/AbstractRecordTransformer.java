@@ -15,7 +15,7 @@ import java.util.Optional;
 public abstract class AbstractRecordTransformer implements RecordTransformer {
     private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
-    private JsonConverter jsonConverter;
+    private final JsonConverter jsonConverter;
     protected Gson gson;
 
     public AbstractRecordTransformer() {

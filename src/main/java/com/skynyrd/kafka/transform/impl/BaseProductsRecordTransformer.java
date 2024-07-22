@@ -3,7 +3,7 @@ package com.skynyrd.kafka.transform.impl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.Consts;
-import com.skynyrd.kafka.model.Record;
+import com.skynyrd.kafka.model.RecordSink;
 import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
     @Override
-    public Optional<Record> apply(SinkRecord record) throws ParseException {
+    public Optional<RecordSink> apply(SinkRecord record) throws ParseException {
         SinkPayload sinkPayload = extractPayload(record);
         Optional<JsonObject> after = sinkPayload.getAfter();
         Optional<JsonObject> before = sinkPayload.getBefore();
@@ -25,7 +25,7 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
             case CREATE:
                 return after.map(this::createInsertRecord);
             case UPDATE:
-                return after.map(this::createUpdateRecord);
+                return  after.map(this::createUpdateRecord);
             case DELETE:
                 return before.map(this::createDeleteRecord);
             case DB_SOFT_DELETE:
@@ -35,12 +35,12 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
         }
     }
 
-    private Record createDeleteRecord(JsonObject payload) {
+    private RecordSink createDeleteRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
-        return new Record(new JsonObject(), id, RecordType.DELETE, Consts.PRODUCTS_INDEX);
+        return new RecordSink(new JsonObject(), id, RecordType.DELETE, Consts.PRODUCTS_INDEX);
     }
 
-    private Record createInsertRecord(JsonObject payload) {
+    private RecordSink createInsertRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
 
         JsonObject docJson = new JsonObject();
@@ -64,10 +64,10 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         docJson.add("suggest", Utils.createProductSuggestions(gson.fromJson(payload.get("name").getAsString(), JsonArray.class), payload.get("store_id").getAsLong(), payload.get("status").getAsString()));
 
-        return new Record(docJson, id, RecordType.INSERT, Consts.PRODUCTS_INDEX);
+        return new RecordSink(docJson, id, RecordType.INSERT, Consts.PRODUCTS_INDEX);
     }
 
-    private Record createUpdateRecord(JsonObject payload) {
+    private RecordSink createUpdateRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
 
         String updScript = "ctx._source.category_id = params.category_id;" + "ctx._source.currency = params.currency;" + "ctx._source.store_id = params.store_id;" + "ctx._source.name = params.name;" + "ctx._source.short_description = params.short_description;" + "ctx._source.long_description = params.long_description;" + "ctx._source.views = params.views;" + "ctx._source.rating = params.rating;" + "ctx._source.status = params.status;" + "ctx._source.store_status = params.store_status;" + "ctx._source.suggest = params.suggest;";
@@ -100,6 +100,6 @@ public class BaseProductsRecordTransformer extends AbstractRecordTransformer {
 
         docJson.add("script", scriptJson);
 
-        return new Record(docJson, id, RecordType.UPDATE, Consts.PRODUCTS_INDEX);
+        return new RecordSink(docJson, id, RecordType.UPDATE, Consts.PRODUCTS_INDEX);
     }
 }

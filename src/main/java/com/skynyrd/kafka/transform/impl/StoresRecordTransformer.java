@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.skynyrd.kafka.Consts;
-import com.skynyrd.kafka.model.Record;
+import com.skynyrd.kafka.model.RecordSink;
 import com.skynyrd.kafka.model.RecordType;
 import com.skynyrd.kafka.model.SinkPayload;
 import com.skynyrd.kafka.transform.AbstractRecordTransformer;
@@ -19,7 +19,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
     private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
-    public Optional<Record> apply(SinkRecord record) throws ParseException {
+    public Optional<RecordSink> apply(SinkRecord record) throws ParseException {
         SinkPayload sinkPayload = extractPayload(record);
         Optional<JsonObject> after = sinkPayload.getAfter();
         Optional<JsonObject> before = sinkPayload.getBefore();
@@ -46,9 +46,9 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
         }
     }
 
-    private Record createDeleteRecord(JsonObject payload) {
+    private RecordSink createDeleteRecord(JsonObject payload) {
         String id = payload.get("id").getAsString();
-        return new Record(new JsonObject(), id, RecordType.DELETE, Consts.STORES_INDEX);
+        return new RecordSink(new JsonObject(), id, RecordType.DELETE, Consts.STORES_INDEX);
     }
 
     private JsonObject createDoc(JsonObject payload) {
@@ -92,18 +92,18 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
         return docJson;
     }
 
-    private Record createInsertRecord(JsonObject payload) throws ParseException {
+    private RecordSink createInsertRecord(JsonObject payload) throws ParseException {
         try {
             String id = payload.get("id").getAsString();
             JsonObject docJson = createDoc(payload);
-            return new Record(docJson, id, RecordType.INSERT, Consts.STORES_INDEX);
+            return new RecordSink(docJson, id, RecordType.INSERT, Consts.STORES_INDEX);
         } catch (Exception e) {
             log.error("Error parsing payload [" + payload + "]");
             throw new ParseException("Error parsing payload", -1);
         }
     }
 
-    private Record createUpdateRecord(JsonObject payload) throws ParseException {
+    private RecordSink createUpdateRecord(JsonObject payload) throws ParseException {
         try {
             String id = payload.get("id").getAsString();
 
@@ -122,7 +122,7 @@ public class StoresRecordTransformer extends AbstractRecordTransformer {
 
             docJson.add("script", scriptJson);
 
-            return new Record(docJson, id, RecordType.UPDATE, Consts.STORES_INDEX);
+            return new RecordSink(docJson, id, RecordType.UPDATE, Consts.STORES_INDEX);
         } catch (Exception e) {
             log.error("Error parsing payload [" + payload + "]");
             throw new ParseException("Error parsing payload", -1);
